@@ -1,1 +1,35 @@
 @import "../../common/styles/common.scss";
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("../../assets/background-1.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+
+  .SignIn {
+    height: 80vh;
+    width: 80vw;
+    border: none;
+    background: #fff;
+    border: none;
+    box-shadow: 1px 2px 8px 3px lightgrey;
+
+    .LeftColumn {
+      background: url("../../assets/background-signin.jpg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    .RightColumn {
+      padding: 1em 3em 1em 1em;
+
+      p {
+        color: gray;
+      }
+    }
+  }
+}

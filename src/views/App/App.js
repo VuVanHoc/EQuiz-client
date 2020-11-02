@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy } from "react";
 import SignIn from "../SignIn/SignInContainer";
 import "./App.scss";
 
 function App() {
-  const [visible, setVisible] = useState(false);
   return (
-    <div className="app">
+    <div className="App">
       <SignIn />
     </div>
   );
