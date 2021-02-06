@@ -1,0 +1,36 @@
+@import "../../common/styles/variables.scss";
+
+.bg {
+  background-color: #f0f0f0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .container {
+    width: 85vw;
+    height: 90vh;
+    display: flex;
+    background-color: #fff;
+
+    .left {
+      flex: 3;
+      background-color: $dark_blue;
+      display: flex;
+
+      img {
+        margin: auto;
+      }
+    }
+    .right {
+      flex: 2;
+      padding: 30px;
+
+      .form-label {
+        font-size: 16px;
+      }
+      .btnSubmit {
+        background-color: $dark_blue;
+      }
+    }
+  }
+}

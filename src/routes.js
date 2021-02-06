@@ -1,14 +1,22 @@
-import React from "react";
-import { Router, Switch } from "react-router-dom";
-import 
-function Routes() {
+import React, { Suspense } from "react";
+import { connect } from "react-redux";
+import Loading from "./common/components/Loading";
+
+const Authentication = React.lazy(() => import("./views/Authentication"));
+const App = React.lazy(() => import("./views/App"));
+
+function Routes({ isLogin }) {
   return (
     <>
-      <Switch>
-          <Router path="/login" component={}/>
-      </Switch>
+      <Suspense fallback={<Loading spinning={true} />}>
+        {isLogin ? <App /> : <Authentication />}
+      </Suspense>
     </>
   );
 }
 
-export default Routes;
+const mapStateToProps = (state) => ({
+  isLogin: state.auth.isLogin,
+});
+const mapDispatchToProps = {};
+export default connect(mapStateToProps, mapDispatchToProps)(Routes);

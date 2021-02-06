@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import { connect } from "react-redux";
 
-export const SignUp = () => {
-  return <div>Sign Up form</div>;
+export const SignUp = (props) => {
+  return <div>Signups</div>;
 };
 
 const mapStateToProps = (state) => ({});
