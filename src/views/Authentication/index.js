@@ -7,6 +7,7 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
+import { ROUTES_PATH } from "../../common/Constants";
 import Loading from "../../common/components/Loading";
 import { Login, Signup, ForgotPassword } from "./auth.routes";
 export const Authentication = () => {
@@ -15,10 +16,13 @@ export const Authentication = () => {
       <div className="Authentication">
         <Router>
           <Switch>
-            <Route path="/login" component={Login} />
-            <Route path="/sign-up" component={Signup} />
-            <Route path="/forgot-password" component={ForgotPassword} />
-            <Redirect path="/*" exact to="/login" />
+            <Route path={ROUTES_PATH.LOGIN} component={Login} />
+            <Route path={ROUTES_PATH.SIGNUP} component={Signup} />
+            <Route
+              path={ROUTES_PATH.FORGOT_PASSWORD}
+              component={ForgotPassword}
+            />
+            <Redirect path="/*" exact to={ROUTES_PATH.LOGIN} />
           </Switch>
         </Router>
       </div>

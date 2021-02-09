@@ -1,5 +1,11 @@
 @import "../../common/styles/variables.scss";
-
+.d-flex {
+  display: flex;
+  justify-content: space-between;
+}
+.mg-top-12 {
+  margin-top: 12px;
+}
 .bg {
   background-color: #f0f0f0;
   height: 100vh;
@@ -8,7 +14,7 @@
   align-items: center;
   .container {
     width: 85vw;
-    height: 90vh;
+    height: 95vh;
     display: flex;
     background-color: #fff;
 
@@ -23,8 +29,15 @@
     }
     .right {
       flex: 2;
-      padding: 30px;
+      padding: 30px 40px;
 
+      .title {
+        color: $dark_blue;
+      }
+      .logo {
+        display: flex;
+        justify-content: flex-end;
+      }
       .form-label {
         font-size: 16px;
       }
