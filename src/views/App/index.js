@@ -1,42 +1,45 @@
 import React, { Component, useState } from "react";
 import { connect } from "react-redux";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Badge } from "antd";
 import AppBody from "./AppBody";
 import logoEquiz from "../../assets/logoEQuiz.png";
 import { Link, BrowserRouter as Router } from "react-router-dom";
 import history from "../../utils/history";
-
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
-
+import { ROUTES_PATH } from "../../common/Constants";
+import "./App.scss";
+import UserMenu from "../../common/components/UserMenu";
 export const index = () => {
   const { Sider, Header, Content } = Layout;
 
   const [collapsed, setCollapsed] = useState(false);
+  const currentMenu = window.location.pathname.slice(1);
+  console.log(currentMenu);
   return (
     <Router history={history}>
       <Layout>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-          <div>
-            <img src={logoEquiz} height={64} />
+        <Header className="header">
+          <img src={logoEquiz} height={64} />
+          <div className="header-right">
+            {/* <BellOutlined className="icon" /> */}
+            <UserMenu />
           </div>
-          <Menu theme="light" mode="inline">
-            <Menu.Item key="classroom">
-              <Link to="/classrooms">Quản lý lớp học</Link>
-            </Menu.Item>
-            <Menu.Item key="questions">
-              <Link to="/questions">Quản lý câu hỏi</Link>
-            </Menu.Item>
-          </Menu>
-        </Sider>
+        </Header>
         <Layout>
-          <Header>
-            {collapsed ? (
-              <MenuUnfoldOutlined color="#fff" />
-            ) : (
-              <MenuFoldOutlined color="#fff" />
-            )}
-          </Header>
-          <Content>
+          <Sider className="sider" collapsible theme="light">
+            <Menu
+              theme="light"
+              mode="inline"
+              defaultSelectedKeys={[currentMenu]}
+            >
+              <Menu.Item key="classrooms">
+                <Link to={ROUTES_PATH.CLASSROOMS}>Quản lý lớp học</Link>
+              </Menu.Item>
+              <Menu.Item key="questions">
+                <Link to={ROUTES_PATH.QUESTIONS}>Quản lý câu hỏi</Link>
+              </Menu.Item>
+            </Menu>
+          </Sider>
+          <Content className="container">
             <AppBody />
           </Content>
         </Layout>

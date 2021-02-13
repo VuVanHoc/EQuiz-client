@@ -1,1 +1,33 @@
+@import "../../common/styles/variables.scss";
 
+.header {
+  background-color: #fff;
+  box-shadow: 0 2px 8px #f0f1f2;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+}
+.container {
+  background: #fff;
+}
+.div-logo {
+  height: 64px;
+  box-shadow: 0 2px 8px #f0f1f2;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+
+  .icon {
+    font-size: 20px;
+    cursor: pointer;
+    color: $icon_color;
+    padding: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  .icon:hover {
+    background-color: $bg_icon_hover;
+  }
+}

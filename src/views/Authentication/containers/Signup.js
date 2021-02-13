@@ -13,11 +13,20 @@ import {
 import { ROUTES_PATH, ROLE_TYPE } from "../../../common/Constants";
 import LogoEquiz from "../../../assets/logoEQuiz.png";
 import RoleDropdown from "../../../common/components/RoleDropdown";
+import { requestSignup } from "../../../store/auth/actions";
 
 export const SignUp = (props) => {
   const { Text, Title } = Typography;
+
   const onFinishSignup = (values) => {
-    console.log(values);
+    if (!props.isSubmitting)
+      props.requestSignup({
+        confirmPassword: values.confirmPassword,
+        fullname: values.fullname,
+        password: values.password,
+        userType: values.userType,
+        username: values.email,
+      });
   };
   return (
     <div className="bg">
@@ -76,7 +85,7 @@ export const SignUp = (props) => {
             <Form.Item
               required={false}
               className="form-label"
-              name="cfPassword"
+              name="confirmPassword"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu" },
                 ({ getFieldValue }) => ({
@@ -126,7 +135,12 @@ export const SignUp = (props) => {
               </Checkbox>
             </Form.Item>
             <Form.Item style={{ marginTop: "24px" }}>
-              <Button type="primary" htmlType="submit" className="btnSubmit">
+              <Button
+                loading={props.isSubmitting}
+                type="primary"
+                htmlType="submit"
+                className="btnSubmit"
+              >
                 Đăng ký
                 <ArrowRightOutlined />
               </Button>
@@ -140,8 +154,12 @@ export const SignUp = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  isSubmitting: state.auth.isSubmitting,
+});
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  requestSignup,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

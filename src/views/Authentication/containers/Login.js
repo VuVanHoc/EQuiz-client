@@ -11,12 +11,16 @@ import {
 } from "@ant-design/icons";
 import { ROUTES_PATH } from "../../../common/Constants";
 import LogoEquiz from "../../../assets/logoEQuiz.png";
+import { requestLogin } from "../../../store/auth/actions";
 
 export const Login = (props) => {
   const { Text, Title } = Typography;
 
   const onFinishLogin = (values) => {
-    console.log(values);
+    props.requestLogin({
+      username: values.email,
+      password: values.password,
+    });
   };
   return (
     <div className="bg">
@@ -62,7 +66,12 @@ export const Login = (props) => {
             </div>
 
             <Form.Item style={{ marginTop: "24px" }}>
-              <Button type="primary" htmlType="submit" className="btnSubmit">
+              <Button
+                loading={props.isSubmitting}
+                type="primary"
+                htmlType="submit"
+                className="btnSubmit"
+              >
                 Đăng nhập
                 <ArrowRightOutlined />
               </Button>
@@ -76,8 +85,12 @@ export const Login = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  isSubmitting: state.auth.isSubmitting,
+});
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  requestLogin,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
