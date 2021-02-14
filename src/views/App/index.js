@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Layout, Menu, Badge } from "antd";
 import AppBody from "./AppBody";
@@ -8,12 +8,16 @@ import history from "../../utils/history";
 import { ROUTES_PATH } from "../../common/Constants";
 import "./App.scss";
 import UserMenu from "../../common/components/UserMenu";
+import { HomeOutlined } from "@ant-design/icons";
 export const index = () => {
   const { Sider, Header, Content } = Layout;
 
   const [collapsed, setCollapsed] = useState(false);
-  const currentMenu = window.location.pathname.slice(1);
-  console.log(currentMenu);
+  const [currentMenu, setCurrentMenu] = useState("");
+
+  useEffect(() => {
+    setCurrentMenu(window.location.pathname.slice(1));
+  }, []);
   return (
     <Router history={history}>
       <Layout>
@@ -31,7 +35,7 @@ export const index = () => {
               mode="inline"
               defaultSelectedKeys={[currentMenu]}
             >
-              <Menu.Item key="classrooms">
+              <Menu.Item key="classrooms" icon={<HomeOutlined />}>
                 <Link to={ROUTES_PATH.CLASSROOMS}>Quản lý lớp học</Link>
               </Menu.Item>
               <Menu.Item key="questions">

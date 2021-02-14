@@ -19,7 +19,6 @@ export const SignUp = (props) => {
   const { Text, Title } = Typography;
 
   const onFinishSignup = (values) => {
-    if (!props.isSubmitting)
       props.requestSignup({
         confirmPassword: values.confirmPassword,
         fullname: values.fullname,
@@ -28,6 +27,9 @@ export const SignUp = (props) => {
         username: values.email,
       });
   };
+  const test = () => {
+    props.history.push('/login')
+  }
   return (
     <div className="bg">
       <div className="container">
@@ -35,6 +37,7 @@ export const SignUp = (props) => {
           <img src={OnlineLearning} width={500} />
         </div>
         <div className="right">
+          <button onClick={test}>Click me</button>
           <div className="logo">
             <img src={LogoEquiz} width={100} />
           </div>

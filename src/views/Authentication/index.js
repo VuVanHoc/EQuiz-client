@@ -10,11 +10,12 @@ import {
 import { ROUTES_PATH } from "../../common/Constants";
 import Loading from "../../common/components/Loading";
 import { Login, Signup, ForgotPassword } from "./auth.routes";
+import history from "../../utils/history";
 export const Authentication = () => {
   return (
     <Suspense fallback={<Loading spinning={true} />}>
       <div className="Authentication">
-        <Router>
+        <Router history={history}>
           <Switch>
             <Route path={ROUTES_PATH.LOGIN} component={Login} />
             <Route path={ROUTES_PATH.SIGNUP} component={Signup} />
