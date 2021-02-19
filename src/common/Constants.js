@@ -6,9 +6,11 @@ export const ROUTES_PATH = {
   CLASSROOMS: "/classrooms",
   QUESTIONS: "/questions",
   ACTIVITIES: "/activities",
-  MY_PROFILE: "/my-profile",
+  PROFILE: "/profile",
   SETTINGS: "/settings",
   NOTIFICATIONS: "/notifications",
+  DOCUMENTS: "/documents",
+  CALENDAR: "/calendar",
 };
 export const ROLE_TYPE = {
   TEACHER: "TEACHER",

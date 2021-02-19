@@ -1,7 +1,7 @@
 import React, { Component, useEffect } from "react";
 import { connect } from "react-redux";
 
-export const index = () => {
+export const Questions = () => {
   useEffect(() => {
     console.log("COME TO QUESTIONS");
   }, []);
@@ -12,4 +12,4 @@ const mapStateToProps = (state) => ({});
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(index);
+export default connect(mapStateToProps, mapDispatchToProps)(Questions);

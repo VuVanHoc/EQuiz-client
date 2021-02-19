@@ -1,9 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Avatar, Menu, Dropdown } from "antd";
-import { Link } from "react-router-dom";
+import { Avatar, Menu, Dropdown, Badge } from "antd";
 import {
-  LogoutOutlined,
+  PoweroffOutlined,
   UserOutlined,
   SettingOutlined,
   BellOutlined,
@@ -11,6 +10,7 @@ import {
 import "../styles/common.scss";
 import { ROUTES_PATH } from "../Constants";
 import { requestLogout } from "../../store/auth/actions";
+import { withRouter } from "react-router-dom";
 
 function UserMenu(props) {
   const { currentUser } = props;
@@ -18,35 +18,45 @@ function UserMenu(props) {
   const requestLogout = () => {
     props.requestLogout();
   };
+  const gotoPage = (to) => {
+    props.history.push(to);
+  };
   const menu = (
     <Menu>
-      <Menu.Item icon={<UserOutlined />}>
-        <Link to={ROUTES_PATH.MY_PROFILE}>Thông tin cá nhân</Link>
+      <Menu.Item
+        icon={<UserOutlined />}
+        onClick={() => gotoPage(ROUTES_PATH.PROFILE)}
+      >
+        Thông tin cá nhân
       </Menu.Item>
-      <Menu.Item icon={<BellOutlined />}>
-        <Link to={ROUTES_PATH.NOTIFICATIONS}>Thông báo</Link>
+      <Menu.Item
+        icon={<BellOutlined />}
+        onClick={() => gotoPage(ROUTES_PATH.NOTIFICATIONS)}
+      >
+        Thông báo
       </Menu.Item>
-      <Menu.Item icon={<SettingOutlined />}>
-        <Link to={ROUTES_PATH.SETTINGS}>Cài đặt</Link>
+      <Menu.Item
+        icon={<SettingOutlined />}
+        onClick={() => gotoPage(ROUTES_PATH.SETTINGS)}
+      >
+        Cài đặt
       </Menu.Item>
-      <Menu.Item icon={<LogoutOutlined />} onClick={requestLogout}>
+      <Menu.Item icon={<PoweroffOutlined />} onClick={requestLogout}>
         Đăng xuất
       </Menu.Item>
     </Menu>
   );
   return (
-    <Menu>
-      <Dropdown overlay={menu} trigger="click">
-        <div style={{ cursor: "pointer", marginRight: 8 }}>
-          <Avatar
-            icon={<UserOutlined />}
-            src={currentUser?.avatar}
-            style={{ backgroundColor: currentUser?.defaultColor }}
-          ></Avatar>
-          <span className="display-name">{currentUser?.fullName}</span>
-        </div>
-      </Dropdown>
-    </Menu>
+    <Dropdown overlay={menu} trigger="click">
+      <div style={{ cursor: "pointer", marginRight: 8 }}>
+        <Avatar
+          icon={<UserOutlined />}
+          src={currentUser?.avatar}
+          style={{ backgroundColor: currentUser?.defaultColor }}
+        ></Avatar>
+        <span className="display-name">{currentUser?.fullName}</span>
+      </div>
+    </Dropdown>
   );
 }
 
@@ -58,4 +68,6 @@ const mapDispatchToProps = {
   requestLogout,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(UserMenu)
+);

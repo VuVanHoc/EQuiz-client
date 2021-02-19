@@ -37,25 +37,27 @@ function* requestLogin({ loginRequest }) {
 }
 
 function* requestSignUp({ signupRequest }) {
-  yield put(setSubmittingForm(true));
+  history.push(ROUTES_PATH.LOGIN);
 
-  try {
-    const res = yield call(http.post, `/api/auth/signup`, {
-      ...signupRequest,
-      password: md5(signupRequest.password),
-      confirmPassword: md5(signupRequest.confirmPassword),
-    });
-    if (res) {
-      yield put(setSubmittingForm(false));
-      NotificationSuccess(
-        `Đăng ký thành công`,
-        `Vui lòng xác nhận email để kích hoạt tài khoản`
-      );
-      history.push(ROUTES_PATH.LOGIN);
-    }
-  } catch (error) {
-    yield put(setSubmittingForm(false));
-  }
+  // yield put(setSubmittingForm(true));
+
+  // try {
+  //   const res = yield call(http.post, `/api/auth/signup`, {
+  //     ...signupRequest,
+  //     password: md5(signupRequest.password),
+  //     confirmPassword: md5(signupRequest.confirmPassword),
+  //   });
+  //   if (res) {
+  //     yield put(setSubmittingForm(false));
+  //     NotificationSuccess(
+  //       `Đăng ký thành công`,
+  //       `Vui lòng xác nhận email để kích hoạt tài khoản`
+  //     );
+  //     history.push(ROUTES_PATH.LOGIN);
+  //   }
+  // } catch (error) {
+  //   yield put(setSubmittingForm(false));
+  // }
 }
 function* authSagas() {
   yield takeLatest(AUTHENTICATION_ACTIONS.REQUEST_LOGIN, requestLogin);

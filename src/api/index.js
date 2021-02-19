@@ -1,8 +1,8 @@
 import axios from "axios";
 import { NotificationError } from "../common/components/Notification";
 const http = axios.create({
-  baseURL: "http://18.139.84.167:8890",
-  // baseURL: "http://localhost:8890",
+  // baseURL: "http://18.139.84.167:8890",
+  baseURL: "http://localhost:8890",
 });
 
 http.interceptors.request.use(
