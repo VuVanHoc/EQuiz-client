@@ -7,11 +7,17 @@ import {
   AppstoreOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import { setVisibleModal } from "../../store/common/actions";
 
 export const CreateMenu = (props) => {
+  const createClassroom = () => {
+    props.setVisibleModal("createClassroom", true);
+  };
   const menu = (
     <Menu>
-      <Menu.Item icon={<HomeOutlined />}>Thêm lớp học</Menu.Item>
+      <Menu.Item icon={<HomeOutlined />} onClick={createClassroom}>
+        Thêm lớp học
+      </Menu.Item>
       <Menu.Item icon={<AppstoreOutlined />}>Thêm hoạt động</Menu.Item>
       <Menu.Item icon={<QuestionCircleOutlined />}>Thêm câu hỏi</Menu.Item>
     </Menu>
@@ -25,6 +31,8 @@ export const CreateMenu = (props) => {
 
 const mapStateToProps = (state) => ({});
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setVisibleModal,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateMenu);

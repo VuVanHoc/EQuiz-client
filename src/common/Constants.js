@@ -11,6 +11,7 @@ export const ROUTES_PATH = {
   NOTIFICATIONS: "/notifications",
   DOCUMENTS: "/documents",
   CALENDAR: "/calendar",
+  IMPORT: "/import"
 };
 export const ROLE_TYPE = {
   TEACHER: "TEACHER",

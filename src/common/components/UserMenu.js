@@ -48,7 +48,7 @@ function UserMenu(props) {
   );
   return (
     <Dropdown overlay={menu} trigger="click">
-      <div style={{ cursor: "pointer", marginRight: 8 }}>
+      <div style={{ cursor: "pointer", marginRight: "1em" }}>
         <Avatar
           icon={<UserOutlined />}
           src={currentUser?.avatar}

@@ -29,6 +29,7 @@ module.exports = (env, argv) => {
     entry: ["./src/index.js"],
     output: {
       path: outputPath,
+      publicPath: '/'
     },
     devServer: {
       historyApiFallback: true,

@@ -14,7 +14,7 @@ const ActionMenu = (props) => {
   );
   return (
     <Dropdown trigger="click" overlay={menu}>
-      <MoreOutlined />
+      <MoreOutlined onClick={(e) => e.stopPropagation()} />
     </Dropdown>
   );
 };

@@ -13,20 +13,61 @@ import {
   AppstoreOutlined,
   CalendarOutlined,
   FileSearchOutlined,
+  ImportOutlined,
 } from "@ant-design/icons";
 import CreateMenu from "../../common/components/CreateMenu";
+import CreateClassroomModal from "../../common/components/modals/CreateClassroomModal";
 
 export const App = (props) => {
   const { currentUser } = props;
   const { Sider, Header, Content } = Layout;
 
-  const [currentMenu, setCurrentMenu] = useState("classrooms");
+  const [currentMenu, setCurrentMenu] = useState("");
 
-  useEffect(() => {
-    setCurrentMenu(window.location.pathname.slice(1));
-    console.log("IOIO:" + window.location.pathname.slice(1) + "--");
-  }, [currentUser]);
-
+  const menus = [
+    {
+      key: "classrooms",
+      title: "Quản lý lớp học",
+      icon: <HomeOutlined />,
+      path: ROUTES_PATH.CLASSROOMS,
+    },
+    {
+      key: "activities",
+      title: "Quản lý hoạt động",
+      icon: <AppstoreOutlined />,
+      path: ROUTES_PATH.ACTIVITIES,
+    },
+    {
+      key: "questions",
+      title: "Quản lý câu hỏi",
+      icon: <BookOutlined />,
+      path: ROUTES_PATH.QUESTIONS,
+    },
+    {
+      key: "documents",
+      title: "Tài liệu",
+      icon: <FileSearchOutlined />,
+      path: ROUTES_PATH.DOCUMENTS,
+    },
+    {
+      key: "calendar",
+      title: "Lịch",
+      icon: <CalendarOutlined />,
+      path: ROUTES_PATH.CALENDAR,
+    },
+    {
+      key: "import",
+      title: "Nhập dữ liệu",
+      icon: <ImportOutlined />,
+      path: ROUTES_PATH.IMPORT,
+    },
+    // {
+    //   key: "classroom",
+    //   title: "Quản lý lớp học",
+    //   icon: <HomeOutlined />,
+    //   path: ROUTES_PATH.CLASSROOMS,
+    // },
+  ];
   return (
     <Router>
       <Layout>
@@ -39,26 +80,23 @@ export const App = (props) => {
         </Header>
         <Layout className="body">
           <Sider className="sider" collapsible theme="light">
-            <Menu theme="light" mode="inline">
-              <Menu.Item key="classrooms" icon={<HomeOutlined />}>
-                <Link to={ROUTES_PATH.CLASSROOMS}>Quản lý lớp học</Link>
-              </Menu.Item>
-              <Menu.Item key="activities" icon={<AppstoreOutlined />}>
-                <Link to={ROUTES_PATH.ACTIVITIES}>Quản lý hoạt động</Link>
-              </Menu.Item>
-              <Menu.Item key="questions" icon={<BookOutlined />}>
-                <Link to={ROUTES_PATH.QUESTIONS}>Quản lý câu hỏi</Link>
-              </Menu.Item>
-              <Menu.Item key="documents" icon={<FileSearchOutlined />}>
-                <Link to={ROUTES_PATH.DOCUMENTS}>Tài liệu</Link>
-              </Menu.Item>
-              <Menu.Item key="calendar" icon={<CalendarOutlined />}>
-                <Link to={ROUTES_PATH.CALENDAR}>Lịch</Link>
-              </Menu.Item>
+            <Menu
+              theme="light"
+              mode="inline"
+              defaultSelectedKeys={[currentMenu]}
+            >
+              {menus.map((e) => (
+                <Menu.Item key={e.key} icon={e.icon}>
+                  <Link to={e.path}>{e.title}</Link>
+                </Menu.Item>
+              ))}
             </Menu>
           </Sider>
           <Content className="container">
             <AppBody />
+
+            {/* common modal here */}
+            <CreateClassroomModal />
           </Content>
         </Layout>
       </Layout>
