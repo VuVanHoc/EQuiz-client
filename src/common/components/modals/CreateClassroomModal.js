@@ -3,9 +3,11 @@ import { connect } from "react-redux";
 import { setVisibleModal } from "../../../store/common/actions";
 import { Form, Modal, Input, Radio } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import { requestCreate } from "../../../store/classroom/actions";
 
 export const CreateClassroomModal = (props) => {
-  const { visible, setVisibleModal } = props;
+  const { visible, setVisibleModal, requestCreate } = props;
+
   const [roomType, setRoomType] = useState("PRIVATE");
   const [form] = Form.useForm();
   const onCancel = () => {
@@ -15,7 +17,7 @@ export const CreateClassroomModal = (props) => {
   };
   const onOk = () => {
     form.validateFields().then((values) => {
-      console.log(values);
+      requestCreate(values);
     });
   };
 
@@ -24,6 +26,7 @@ export const CreateClassroomModal = (props) => {
   };
   return (
     <Modal
+      width={600}
       title="Tạo lớp học"
       cancelText="Huỷ"
       okText="Tạo"
@@ -94,6 +97,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   setVisibleModal,
+  requestCreate,
 };
 
 export default connect(

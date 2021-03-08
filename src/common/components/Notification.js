@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { notification, message } from "antd";
 
 export const NotificationSuccess = (
   title,

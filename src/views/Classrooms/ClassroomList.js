@@ -1,17 +1,34 @@
 import React, { Component, useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { ROLE_TYPE } from "../../common/Constants";
-import { Table, Tag, Typography, Avatar, Skeleton } from "antd";
-import ActionMenu from "./ActionMenu";
+import { ROLE_TYPE, ROUTES_PATH } from "../../common/Constants";
+import {
+  Table,
+  Tag,
+  Typography,
+  Avatar,
+  Button,
+  Badge,
+  Popover,
+  Pagination,
+  Popconfirm,
+  Tooltip,
+} from "antd";
 import { useHistory, useRouteMatch } from "react-router-dom";
+import {
+  MailFilled,
+  PhoneFilled,
+  DeleteTwoTone,
+  EditTwoTone,
+  Icon,
+} from "@ant-design/icons";
+import DocumentSvg from "../../assets/Document.svg";
+import { requestFetchList } from "../../store/classroom/actions";
 
 export const ClassroomList = (props) => {
-  const { currentUser } = props;
+  const { currentUser, isFetching, totalResult, dataSource } = props;
   let history = useHistory();
-  let { path, url } = useRouteMatch();
 
   const { Text, Title } = Typography;
-  const [isFetching, setFetching] = useState(false);
   const columns = [
     { title: "Mã lớp học", dataIndex: "code", fixed: "left" },
     {
@@ -22,7 +39,7 @@ export const ClassroomList = (props) => {
     {
       title: "Mô tả",
       dataIndex: "description",
-      width: 400,
+      width: 300,
     },
     {
       title: "Sĩ số",
@@ -30,8 +47,8 @@ export const ClassroomList = (props) => {
       // sorter: (a, b) => a.totalStudent - b.totalStudent,
     },
     {
-      title: "Trạng thái",
-      dataIndex: "isPrivate",
+      title: "Hình thức",
+      dataIndex: "private",
       render: (isPrivate) => {
         if (isPrivate) {
           return <Tag color="red">Private</Tag>;
@@ -43,43 +60,72 @@ export const ClassroomList = (props) => {
       title: "Người quản lý",
       dataIndex: "responsible",
       render: (_, record) => {
-        return <Avatar>H</Avatar>;
+        return (
+          <Popover
+            placement="right"
+            title={record.responsibleName}
+            content={
+              <div style={{ display: "block" }}>
+                {record.responsibleEmail && (
+                  <a href={`mailto:${record.responsibleEmail}`} target="_blank">
+                    <MailFilled />
+                    {record.responsibleEmail}
+                  </a>
+                )}
+                {record.responsiblePhone && (
+                  <a href={`tel:${record.responsiblePhone}`} target="_blank">
+                    <PhoneFilled />
+                    {record.responsiblePhone}
+                  </a>
+                )}
+              </div>
+            }
+          >
+            <Avatar>H</Avatar>
+          </Popover>
+        );
       },
     },
     {
       render: (_, record) => {
-        return <ActionMenu record={record} />;
+        // return <ActionMenu record={record} />;
+        return (
+          <>
+            <EditTwoTone
+              style={{ fontSize: 16, marginRight: 16 }}
+              twoToneColor="#6AC3E8"
+            />
+            <Popconfirm
+              width={150}
+              title="Bạn chắc chắn muốn xoá lớp học này không?"
+              okText="Xoá"
+              cancelText="Huỷ"
+              placement="topRight"
+              onConfirm={deleteClassroom}
+              onCancel={(e) => e.stopPropagation()}
+            >
+              <DeleteTwoTone
+                style={{ fontSize: 16 }}
+                twoToneColor="red"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Popconfirm>
+          </>
+        );
       },
-    },
-  ];
-  const data = [
-    {
-      id: "123124hjkhkj12124124",
-      key: "1",
-      name: "Cấu trúc dữ liệu & giải thuật",
-      description:
-        "Đây là mô tả vài dòng về lớp học Đây là mô tả vài dòng về lớp học Đây là mô tả vài dòng về lớp học",
-      code: "INT 2107 9",
-      totalStudent: 90,
-      isPrivate: true,
-      responsible: {
-        avatar: "",
-        name: "",
-      },
-    },
-    {
-      id: "nknckjanskcnajkca",
-      key: "2",
-      name: "Giải tích 2",
-      code: "MAT 3029",
-      totalStudent: 45,
-      isPrivate: false,
     },
   ];
 
-  const onRowClick = (event, record) => {
-    history.push(`${path}/${record.id}`);
+  const deleteClassroom = (e, id) => {
+    e.stopPropagation();
   };
+
+  const onChangePaging = (pageIndex, pageSize) => {
+    props.requestFetchList({ pageIndex: pageIndex - 1, pageSize });
+  };
+  useEffect(() => {
+    props.requestFetchList({ pageSize: 5 });
+  }, []);
   return (
     <div>
       <Title level={3} className="header-table">
@@ -91,22 +137,41 @@ export const ClassroomList = (props) => {
         // rowSelection={{ ...rowSelection }}
         // scroll={{ x: 1500 }}
         loading={isFetching}
-        columns={columns}
-        dataSource={data}
-        onRow={(record, rowIndex) => {
+        onRow={(record, index) => {
           return {
-            onClick: (event) => onRowClick(event, record),
+            onClick: () =>
+              history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
           };
         }}
+        columns={columns}
+        pagination={{
+          total: totalResult,
+          onChange: (pageIndex, pageSize) => {
+            onChangePaging(pageIndex, pageSize);
+          },
+          pageSize: 5,
+          showTotal: (total) => {
+            return `Tổng số: ${total} kết quả`;
+          },
+        }}
+        rowKey={(record) => record.id}
+        dataSource={dataSource}
       />
     </div>
   );
 };
 
-const mapStateToProps = (state) => ({
-  currentUser: state.auth.user,
-});
+const mapStateToProps = (state) => {
+  return {
+    currentUser: state.auth.user,
+    totalResult: state.classroom.totalResult,
+    dataSource: state.classroom.dataSource,
+    isFetching: state.classroom.isFetching,
+  };
+};
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  requestFetchList,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ClassroomList);

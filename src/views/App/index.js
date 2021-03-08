@@ -4,7 +4,7 @@ import { Layout, Menu } from "antd";
 import AppBody from "./AppBody";
 import logoEquiz from "../../assets/logoEQuiz.png";
 import { Link, BrowserRouter as Router } from "react-router-dom";
-import { ROUTES_PATH } from "../../common/Constants";
+import { ROUTES_PATH, ROLE_TYPE } from "../../common/Constants";
 import "./App.scss";
 import UserMenu from "../../common/components/UserMenu";
 import {
@@ -75,6 +75,7 @@ export const App = (props) => {
           <img src={logoEquiz} height={64} />
           <div className="header-right">
             <CreateMenu />
+
             <UserMenu />
           </div>
         </Header>

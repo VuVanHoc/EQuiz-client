@@ -1,8 +1,21 @@
 import React from "react";
 import { connect } from "react-redux";
+import { Switch, Route } from "react-router-dom";
+import ActivityDetail from "./ActivityDetail";
+import ActivityList from "./ActivityList";
+import { ROUTES_PATH } from "../../common/Constants";
 
 export const Activities = (props) => {
-  return <div>Activities</div>;
+  return (
+    <Switch>
+      <Route exact path={ROUTES_PATH.ACTIVITIES} component={ActivityList} />
+      <Route
+        exact
+        path={`${ROUTES_PATH.ACTIVITIES}/:id`}
+        component={ActivityDetail}
+      />
+    </Switch>
+  );
 };
 
 const mapStateToProps = (state) => ({});
