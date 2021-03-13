@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { setVisibleModal } from "../../../store/common/actions";
 import { Form, Modal, Input, Radio } from "antd";
@@ -7,6 +7,10 @@ import { requestCreate } from "../../../store/classroom/actions";
 
 export const CreateClassroomModal = (props) => {
   const { visible, setVisibleModal, requestCreate } = props;
+
+  useEffect(() => {
+    !!visible && visible && form.resetFields();
+  }, [visible]);
 
   const [roomType, setRoomType] = useState("PRIVATE");
   const [form] = Form.useForm();

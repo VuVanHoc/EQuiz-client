@@ -87,6 +87,7 @@ export const ClassroomList = (props) => {
       },
     },
     {
+      title: "Thao tác",
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (

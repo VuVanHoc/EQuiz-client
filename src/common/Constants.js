@@ -11,9 +11,15 @@ export const ROUTES_PATH = {
   NOTIFICATIONS: "/notifications",
   DOCUMENTS: "/documents",
   CALENDAR: "/calendar",
-  IMPORT: "/import"
+  IMPORT: "/import",
 };
 export const ROLE_TYPE = {
   TEACHER: "TEACHER",
   STUDENT: "STUDENT",
+};
+export const QUESTION_TYPES = {
+  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
+  TRUE_FALSE: "TRUE_FALSE",
+  MULTIPLE_CORRECT: "MULTIPLE_CORRECT",
+  FILL_IN: "FILL_IN",
 };

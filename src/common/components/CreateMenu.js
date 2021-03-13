@@ -16,7 +16,16 @@ export const CreateMenu = (props) => {
   const createClassroom = () => {
     props.setVisibleModal("createClassroom", true);
   };
-  const joinToClassroom = () => {};
+  const createActivity = () => {
+    props.setVisibleModal("createActivity", true);
+  };
+  const createQuestion = () => {
+    props.setVisibleModal("createQuestion", true);
+  };
+  const joinToClassroom = () => {
+    props.setVisibleModal("join2Classroom", true);
+  };
+
   const menu = (
     <Menu>
       {currentUser?.userType === ROLE_TYPE.TEACHER ? (
@@ -24,8 +33,12 @@ export const CreateMenu = (props) => {
           <Menu.Item icon={<HomeOutlined />} onClick={createClassroom}>
             Thêm lớp học
           </Menu.Item>
-          <Menu.Item icon={<AppstoreOutlined />}>Thêm hoạt động</Menu.Item>
-          <Menu.Item icon={<QuestionCircleOutlined />}>Thêm câu hỏi</Menu.Item>
+          <Menu.Item icon={<AppstoreOutlined />} onClick={createActivity}>
+            Thêm hoạt động
+          </Menu.Item>
+          <Menu.Item icon={<QuestionCircleOutlined />} onClick={createQuestion}>
+            Thêm câu hỏi
+          </Menu.Item>
         </>
       ) : (
         <>
