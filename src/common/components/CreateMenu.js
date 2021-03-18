@@ -8,7 +8,8 @@ import {
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { setVisibleModal } from "../../store/common/actions";
-import { ROLE_TYPE } from "../Constants";
+import { ROLE_TYPE, ROUTES_PATH } from "../Constants";
+import { withRouter } from "react-router-dom";
 
 export const CreateMenu = (props) => {
   const { currentUser } = props;
@@ -17,7 +18,7 @@ export const CreateMenu = (props) => {
     props.setVisibleModal("createClassroom", true);
   };
   const createActivity = () => {
-    props.setVisibleModal("createActivity", true);
+    props.history.push(`${ROUTES_PATH.ACTIVITIES}/create-activity`);
   };
   const createQuestion = () => {
     props.setVisibleModal("createQuestion", true);
@@ -31,13 +32,13 @@ export const CreateMenu = (props) => {
       {currentUser?.userType === ROLE_TYPE.TEACHER ? (
         <>
           <Menu.Item icon={<HomeOutlined />} onClick={createClassroom}>
-            Thêm lớp học
+            Tạo lớp học
           </Menu.Item>
           <Menu.Item icon={<AppstoreOutlined />} onClick={createActivity}>
-            Thêm hoạt động
+            Tạo hoạt động
           </Menu.Item>
           <Menu.Item icon={<QuestionCircleOutlined />} onClick={createQuestion}>
-            Thêm câu hỏi
+            Tạo câu hỏi
           </Menu.Item>
         </>
       ) : (
@@ -64,4 +65,6 @@ const mapDispatchToProps = {
   setVisibleModal,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateMenu);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(CreateMenu)
+);

@@ -22,6 +22,9 @@ import {
   PlayCircleOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import StudentList from "./StudentList";
+// import HistoryClassroom from "./HistoryClassroom";
+
 export const ClassroomDetail = (props) => {
   const { TabPane } = Tabs;
 
@@ -184,8 +187,12 @@ export const ClassroomDetail = (props) => {
             </Col>
           </Row>
         </TabPane>
-        <TabPane tab="Danh sách học sinh" key="2"></TabPane>
-        <TabPane tab="Lịch sử học tập" key="3"></TabPane>
+        <TabPane tab="Danh sách học sinh" key="2">
+          <StudentList />
+        </TabPane>
+        {/* <TabPane tab="Lịch sử học tập" key="3">
+          <HistoryClassroom />
+        </TabPane> */}
       </Tabs>
     </div>
   );

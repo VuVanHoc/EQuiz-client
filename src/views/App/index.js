@@ -63,12 +63,20 @@ export const App = (props) => {
       icon: <ImportOutlined />,
       path: ROUTES_PATH.IMPORT,
     },
-    // {
-    //   key: "classroom",
-    //   title: "Quản lý lớp học",
-    //   icon: <HomeOutlined />,
-    //   path: ROUTES_PATH.CLASSROOMS,
-    // },
+  ];
+  const menusStudent = [
+    {
+      key: "classrooms",
+      title: "Lớp học của tôi",
+      icon: <HomeOutlined />,
+      path: ROUTES_PATH.CLASSROOMS,
+    },
+    {
+      key: "activities",
+      title: "Các hoạt động",
+      icon: <AppstoreOutlined />,
+      path: ROUTES_PATH.ACTIVITIES,
+    },
   ];
   return (
     <Router>
@@ -88,11 +96,17 @@ export const App = (props) => {
               mode="inline"
               defaultSelectedKeys={[currentMenu]}
             >
-              {menus.map((e) => (
-                <Menu.Item key={e.key} icon={e.icon}>
-                  <Link to={e.path}>{e.title}</Link>
-                </Menu.Item>
-              ))}
+              {currentUser.userType === ROLE_TYPE.TEACHER
+                ? menus.map((e) => (
+                    <Menu.Item key={e.key} icon={e.icon}>
+                      <Link to={e.path}>{e.title}</Link>
+                    </Menu.Item>
+                  ))
+                : menusStudent.map((e) => (
+                    <Menu.Item key={e.key} icon={e.icon}>
+                      <Link to={e.path}>{e.title}</Link>
+                    </Menu.Item>
+                  ))}
             </Menu>
           </Sider>
           <Content className="container">

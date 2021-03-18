@@ -11,7 +11,7 @@ import {
   Popover,
   Pagination,
   Popconfirm,
-  Tooltip,
+  Input,
 } from "antd";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import {
@@ -21,7 +21,6 @@ import {
   EditTwoTone,
   Icon,
 } from "@ant-design/icons";
-import DocumentSvg from "../../assets/Document.svg";
 import { requestFetchList } from "../../store/classroom/actions";
 
 export const ClassroomList = (props) => {
@@ -95,6 +94,7 @@ export const ClassroomList = (props) => {
             <EditTwoTone
               style={{ fontSize: 16, marginRight: 16 }}
               twoToneColor="#6AC3E8"
+              onClick={(e) => e.stopPropagation()}
             />
             <Popconfirm
               width={150}
@@ -129,11 +129,20 @@ export const ClassroomList = (props) => {
   }, []);
   return (
     <div>
-      <Title level={3} className="header-table">
-        {currentUser?.userType === ROLE_TYPE.TEACHER
-          ? "Danh sách lớp học"
-          : "Lớp học của tôi"}
-      </Title>
+      <div className="d-flex">
+        <Title level={3} className="header-table">
+          {currentUser?.userType === ROLE_TYPE.TEACHER
+            ? "Danh sách lớp học"
+            : "Lớp học của tôi"}
+        </Title>
+        <Input.Search
+          allowClear
+          enterButton
+          placeholder="Tìm kiếm lớp học"
+          style={{ width: 350 }}
+        />
+      </div>
+
       <Table
         // rowSelection={{ ...rowSelection }}
         // scroll={{ x: 1500 }}

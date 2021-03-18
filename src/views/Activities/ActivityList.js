@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Typography, Table, Tag } from "antd";
+import { Typography, Table, Tag, Input } from "antd";
 import { ROLE_TYPE } from "../../common/Constants";
+import "./Activity.scss";
 
 export const ActivityList = (props) => {
   const { isFetching, currentUser } = props;
@@ -51,11 +52,20 @@ export const ActivityList = (props) => {
   ];
   return (
     <div>
-      <Title level={3} className="header-table">
-        {currentUser?.userType === ROLE_TYPE.TEACHER
-          ? "Danh sách hoạt động"
-          : "Hoạt động của tôi"}
-      </Title>
+      <div className="d-flex">
+        <Title level={3} className="header-table">
+          {currentUser?.userType === ROLE_TYPE.TEACHER
+            ? "Danh sách hoạt động"
+            : "Hoạt động của tôi"}
+        </Title>
+        <Input.Search
+          allowClear
+          enterButton
+          placeholder="Tìm kiếm hoạt động"
+          style={{ width: 350 }}
+        />
+      </div>
+
       <Table
         // rowSelection={{ ...rowSelection }}
         // scroll={{ x: 1500 }}

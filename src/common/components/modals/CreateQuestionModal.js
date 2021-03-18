@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
-import { Modal, Input, Form, Row, Col, Button, Checkbox } from "antd";
+import { Modal, Input, Form, Row, Col, Button, Checkbox, Tooltip } from "antd";
 import QuestionTypeDropdown from "../QuestionTypeDropdown";
 import LevelDropdown from "../LevelDropdown";
 import {
@@ -8,6 +8,7 @@ import {
   DeleteTwoTone,
   CheckSquareTwoTone,
   CheckCircleTwoTone,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { setVisibleModal } from "../../../store/common/actions";
 import Editor from "../Editor";
@@ -29,19 +30,76 @@ export const CreateQuestionModal = (props) => {
   const [answerModeEditor, setAnswerModeEditor] = useState(false);
   const [questionContent, setQuestionContent] = useState("");
   const [answerFillin, setAnswerFillin] = useState("");
+  const [errorAnswer, setErrorAnswer] = useState(null);
+  const [errorQuestion, setErrorQuestion] = useState(null);
 
   const resetForm = () => {
     setQuestionType(null);
     setListAnswer([]);
     setQuestionContent("");
     setAnswerFillin("");
+    setErrorAnswer(null);
+    setErrorQuestion(null);
   };
   useEffect(() => {
     visible && resetForm();
   }, [visible]);
 
   const onOk = () => {
-    form.validateFields().then((values) => console.log(values));
+    form.validateFields().then((values) => {
+      if (
+        !questionContent ||
+        questionContent?.trim() === "" ||
+        questionContent?.trim() === "<p></p>" ||
+        questionContent?.trim() === "<p><br></p>"
+      ) {
+        setErrorQuestion("Bạn chưa nhập nội dung câu hỏi");
+        return;
+      }
+      switch (questionType) {
+        case QUESTION_TYPES.FILL_IN:
+          if (answerFillin?.trim() === "" || !answerFillin) {
+            setErrorAnswer("Bạn chưa nhập đáp án");
+            return;
+          }
+          break;
+        case QUESTION_TYPES.MULTIPLE_CHOICE:
+          let a = listAnswer.find((e) => e.correct === true);
+          if (!a) {
+            setErrorAnswer("Bạn cần lựa chọn ít nhất 1 đáp án đúng");
+            return;
+          }
+          break;
+        case QUESTION_TYPES.MULTIPLE_CORRECT:
+          let b = listAnswer.find((e) => e.correct === true);
+          if (!b) {
+            setErrorAnswer("Bạn cần lựa chọn ít nhất 1 đáp án đúng");
+            return;
+          }
+          break;
+        case QUESTION_TYPES.TRUE_FALSE:
+          let c = listAnswer.find((e) => e.correct === true);
+          if (!c) {
+            setErrorAnswer("Bạn cần lựa chọn ít nhất 1 đáp án đúng");
+            return;
+          }
+          break;
+      }
+
+      setErrorAnswer(null);
+      let body = {
+        questionType: values.questionType,
+        level: values.level,
+        hint: values.hint,
+        content: questionContent,
+        answerList:
+          questionType === QUESTION_TYPES.FILL_IN
+            ? [{ correct: true, content: answerFillin }]
+            : listAnswer,
+      };
+
+      console.log("REQ:", body);
+    });
   };
   const onCancel = () => {
     setVisibleModal("createQuestion", false);
@@ -93,11 +151,18 @@ export const CreateQuestionModal = (props) => {
     switch (questionType) {
       case QUESTION_TYPES.FILL_IN:
         return (
-          <Input
-            placeholder="Nhập đáp án..."
-            value={answerFillin}
-            onChange={(e) => setAnswerFillin(e.target.value)}
-          />
+          <>
+            <Input
+              style={errorAnswer && { borderColor: "#ff4d4f" }}
+              placeholder="Nhập đáp án..."
+              value={answerFillin}
+              onChange={(e) => {
+                setAnswerFillin(e.target.value);
+                setErrorAnswer(null);
+              }}
+            />
+            {errorAnswer && <p style={{ color: "#ff4d4f" }}>{errorAnswer}</p>}
+          </>
         );
       case QUESTION_TYPES.MULTIPLE_CHOICE:
         return (
@@ -300,8 +365,14 @@ export const CreateQuestionModal = (props) => {
             <Form.Item colon={false} label="Nội dung câu hỏi">
               <Editor
                 value={questionContent}
-                onChange={(value) => setQuestionContent(value)}
+                onChange={(value) => {
+                  setQuestionContent(value);
+                  setErrorQuestion(null);
+                }}
               />
+              {errorQuestion && (
+                <p style={{ color: "#ff4d4f" }}>{errorQuestion}</p>
+              )}
             </Form.Item>
             <Form.Item
               colon={false}
@@ -312,8 +383,19 @@ export const CreateQuestionModal = (props) => {
               <Input />
             </Form.Item>
             {/* <Form.Item colon={false} label="Đáp án" labelAlign="left"> */}
-            <div style={{ fontWeight: 500 }}>Đáp án</div>
+            <div style={{ fontWeight: 500 }}>
+              Đáp án{" "}
+              <Tooltip
+                placement="topLeft"
+                title={`Đáp án có dấu tích xanh là đáp án đúng`}
+              >
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </div>
             {renderListAnswer(questionType)}
+            {questionType != QUESTION_TYPES.FILL_IN && errorAnswer && (
+              <p style={{ color: "#ff4d4f" }}>{errorAnswer}</p>
+            )}
             {/* </Form.Item> */}
           </Col>
         </Row>

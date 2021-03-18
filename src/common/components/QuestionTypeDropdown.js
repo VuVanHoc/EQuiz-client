@@ -16,7 +16,7 @@ function QuestionTypeDropdown(props) {
     { text: "Điền vào chỗ trống", value: QUESTION_TYPES.FILL_IN },
   ];
   return (
-    <Select {...props} placeholder="Lựa chọn Loại câu hỏi">
+    <Select placeholder="Lựa chọn Loại câu hỏi" {...props}>
       {questionType.map((type, index) => {
         return (
           <Select.Option value={type.value} key={index}>

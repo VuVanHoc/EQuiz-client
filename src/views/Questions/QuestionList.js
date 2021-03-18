@@ -1,7 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Typography, Table } from "antd";
+import { Typography, Table, Input } from "antd";
 import { ROLE_TYPE } from "../../common/Constants";
+import "./Question.scss";
 
 export const QuestionList = (props) => {
   const { isFetching, currentUser } = props;
@@ -33,9 +34,18 @@ export const QuestionList = (props) => {
   ];
   return (
     <div>
-      <Title level={3} className="header-table">
-        Danh sách câu hỏi
-      </Title>
+      <div className="d-flex">
+        <Title level={3} className="header-table">
+          Danh sách câu hỏi
+        </Title>
+        <Input.Search
+          allowClear
+          enterButton
+          placeholder="Tìm kiếm câu hỏi"
+          style={{ width: 350 }}
+        />
+      </div>
+
       <Table
         // rowSelection={{ ...rowSelection }}
         // scroll={{ x: 1500 }}
