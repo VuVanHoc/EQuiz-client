@@ -17,7 +17,6 @@ export const Flashcard = (props) => {
       <Typography.Text>
         Để bắt đầu, bạn cần nhập các cặp từ vào danh sách
       </Typography.Text>
-      <br />
       {listWordFlashcard?.map((wordMap, index) => {
         return (
           <Row key={index} gutter={[12, 12]} align="middle">

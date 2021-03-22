@@ -13,7 +13,7 @@ export const ActivityTypeDropdown = (props) => {
       value: ACTIVITY_TYPE.FLASH_CARD,
     },
     {
-      text: "Ma trận từ ngữ",
+      text: "Crossword",
       value: ACTIVITY_TYPE.MATRIX_WORD,
     },
   ];

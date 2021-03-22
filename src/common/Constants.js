@@ -32,7 +32,7 @@ export const ACTIVITY_TYPE = {
 export const MAP_ACTIVITY_NAME = {
   HANGMAN: "Hangman",
   FLASH_CARD: "Thẻ Flashcard",
-  MATRIX_WORD: "Ma trận từ ngữ",
+  MATRIX_WORD: "Crossword",
 };
 
 export const MAP_LEVEL_LABEL = {

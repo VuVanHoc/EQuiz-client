@@ -81,7 +81,7 @@ export const App = (props) => {
   return (
     <Router>
       <Layout>
-        <Header className="header">
+        <Header className="header-app">
           <img src={logoEquiz} height={64} />
           <div className="header-right">
             <CreateMenu />

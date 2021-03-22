@@ -13,7 +13,9 @@ import LevelDropdown from "../../common/components/LevelDropdown";
 import TextArea from "antd/lib/input/TextArea";
 import { SettingOutlined } from "@ant-design/icons";
 import { Flashcard } from "./Setup/Flashcard";
-
+import { Hangman } from "./Setup/Hangman";
+import { CrosswordGamePlay } from "./Play/Crossword";
+import { HangmanGamePlay } from "./Play/Hangman";
 export const CreateActivity = (props) => {
   const { Title, Text } = Typography;
   const { Step } = Steps;
@@ -24,6 +26,10 @@ export const CreateActivity = (props) => {
     text2: "",
   };
 
+  const templateHangman = {
+    word: "",
+  };
+
   // STATE HERE
   const [currentStep, setCurrentStep] = useState(0);
   const [basicInfoActivity, setBasicInfoActivity] = useState({});
@@ -31,7 +37,7 @@ export const CreateActivity = (props) => {
     templateWordmap,
     templateWordmap,
   ]);
-
+  const [listWordHangman, setListwordHangman] = useState([templateHangman]);
   const [form] = Form.useForm();
 
   // FUNCTION, ACTION HERE
@@ -51,6 +57,7 @@ export const CreateActivity = (props) => {
       setBasicInfoActivity(values);
     });
   };
+  // ACTION FOR FLASHCARD GAME
   const deleteWordMapByIndex = (index) => {
     setListwordFlascard([
       ...listWordFlashcard.slice(0, index),
@@ -65,6 +72,23 @@ export const CreateActivity = (props) => {
       ...listWordFlashcard.slice(0, index),
       { ...listWordFlashcard[index], [field]: value },
       ...listWordFlashcard.slice(index + 1, listWordFlashcard.length),
+    ]);
+  };
+  // ACTION FOR HANGMAN GAME
+  const deleteWord = (index) => {
+    setListwordHangman([
+      ...listWordHangman.slice(0, index),
+      ...listWordHangman.slice(index + 1, listWordHangman.length),
+    ]);
+  };
+  const addWord = () => {
+    setListwordHangman([...listWordHangman, templateHangman]);
+  };
+  const updateWord = (value, index) => {
+    setListwordHangman([
+      ...listWordHangman.slice(0, index),
+      { ...listWordHangman[index], word: value },
+      ...listWordHangman.slice(index + 1, listWordHangman.length),
     ]);
   };
   // RENDER FUNCTION HERE
@@ -154,10 +178,30 @@ export const CreateActivity = (props) => {
               updateWordMap={updateWordMap}
             />
           )}
+          {basicInfoActivity.type === ACTIVITY_TYPE.HANGMAN && (
+            <Hangman
+              listWordHangman={listWordHangman}
+              deleteWord={deleteWord}
+              addWord={addWord}
+              updateWord={updateWord}
+            />
+          )}
         </div>
       );
     } else if (step === 2) {
-      return <p>Pkay</p>;
+      return (
+        <div>
+          <Title level={4}>{`${basicInfoActivity.name} - ${
+            MAP_ACTIVITY_NAME[basicInfoActivity.type]
+          }`}</Title>
+          {basicInfoActivity.type === ACTIVITY_TYPE.MATRIX_WORD && (
+            <CrosswordGamePlay isSetupMode={true} />
+          )}
+          {basicInfoActivity.type === ACTIVITY_TYPE.HANGMAN && (
+            <HangmanGamePlay listWord={listWordHangman} isSetupMode={true} />
+          )}
+        </div>
+      );
     }
   };
   return (
