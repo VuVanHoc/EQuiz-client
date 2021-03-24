@@ -1,0 +1,49 @@
+@import "../../common/styles/variables.scss";
+.d-flex {
+  display: flex;
+  justify-content: space-between;
+}
+.mg-top-12 {
+  margin-top: 12px;
+}
+.bg {
+  background-color: #f0f0f0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .container {
+    width: 85vw;
+    height: 95vh;
+    display: flex;
+    background-color: #fff;
+
+    .left {
+      flex: 3;
+      background-color: $dark_blue;
+      display: flex;
+
+      img {
+        margin: auto;
+      }
+    }
+    .right {
+      flex: 2;
+      padding: 30px 40px;
+
+      .title {
+        color: $dark_blue;
+      }
+      .logo {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .form-label {
+        font-size: 16px;
+      }
+      .btnSubmit {
+        background-color: $dark_blue;
+      }
+    }
+  }
+}

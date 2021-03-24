@@ -1,13 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./views/App/App";
 import { Provider } from "react-redux";
-import { store } from "./middleware";
-
+import { store, persistor } from "./middleware";
+import Routes from "./routes";
+import "antd/dist/antd.css";
+import Loading from "./common/components/Loading";
+import { PersistGate } from "redux-persist/lib/integration/react";
+import { interceptors } from "./api";
+interceptors(store);
 const Root = () => {
   return (
     <Provider store={store}>
-      <App />
+      <PersistGate loading={<Loading spinning={true} />} persistor={persistor}>
+        <Routes />
+      </PersistGate>
     </Provider>
   );
 };
