@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
     entry: ["./src/index.js"],
     output: {
       path: outputPath,
-      publicPath: '/'
+      publicPath: "/",
     },
     devServer: {
       historyApiFallback: true,
@@ -64,6 +64,14 @@ module.exports = (env, argv) => {
           options: {
             publicPath: "",
             name: "images/[hash]-[name].[ext]",
+          },
+        },
+        {
+          test: /\.(mp3|m4a|wav)$/i,
+          loader: "file-loader",
+          options: {
+            publicPath: "",
+            name: "audio/[hash]-[name].[ext]",
           },
         },
         {
