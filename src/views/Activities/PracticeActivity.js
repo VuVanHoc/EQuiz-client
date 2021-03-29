@@ -34,7 +34,7 @@ export const PracticeActivity = (props) => {
   };
   const getListWordForHangman = async () => {
     try {
-      const res = await http.get(`api/word/randomWords?number=10`);
+      const res = await http.get(`api/word/randomWords?number=1`);
       if (res) {
         setListwordHangman(
           res.map((word) => {

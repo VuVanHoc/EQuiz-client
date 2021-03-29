@@ -1,4 +1,4 @@
-import { Button, Typography } from "antd";
+import { Button, Row, Typography, Col, Modal } from "antd";
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import theme1 from "../../../assets/Hangman/theme-balloon1.png";
@@ -11,13 +11,16 @@ import theme7 from "../../../assets/Hangman/theme-balloon7.png";
 import HangmanAudio from "../../../assets/audio/wonOpp.mp3";
 import WrongAnswer from "../../../assets/audio/WrongAnswer.wav";
 import CorrectAnswer from "../../../assets/audio/CorrectAnswer.wav";
+import WinnerSoundClapping from "../../../assets/audio/WinnerSoundClapping.wav";
 import axios from "axios";
 import http from "../../../api";
 import { SoundOutlined } from "@ant-design/icons";
+
 export const HangmanGamePlay = (props) => {
   const audio = new Audio(HangmanAudio);
   const WrongAnswerAudio = new Audio(WrongAnswer);
   const CorrectAnswerAudio = new Audio(CorrectAnswer);
+  const WinnerSoundAudio = new Audio(WinnerSoundClapping);
 
   const defaultListCharacter = {
     A: false,
@@ -56,6 +59,7 @@ export const HangmanGamePlay = (props) => {
     // audio.play();
     return () => {
       audio.pause();
+      setWordInfo(null);
     };
   }, [listWord]);
 
@@ -80,6 +84,7 @@ export const HangmanGamePlay = (props) => {
   const [arrayCharacterOfWord, setArrayCharacterOfWord] = useState([]);
   const [currentWord, setCurrentWord] = useState(null);
   const [wordInfo, setWordInfo] = useState(null);
+  const [visibleSumary, setVisibleSumary] = useState(false);
 
   const onClickACharacter = (character) => {
     setCharacters({ ...characters, [character]: true });
@@ -104,8 +109,10 @@ export const HangmanGamePlay = (props) => {
   };
 
   const nextWord = () => {
-    if (currentWordIndex === listWord.length - 1) {
+    if (currentWordIndex >= listWord.length - 1) {
       setWinner(true);
+      WinnerSoundAudio.play();
+      setVisibleSumary(true);
     } else {
       setNumberWrong(0);
       initWorkingData(currentWordIndex + 1);
@@ -157,119 +164,96 @@ export const HangmanGamePlay = (props) => {
     }
   };
   return (
-    <div style={{ position: "relative" }}>
-      <p
-        style={{
-          position: "absolute",
-          top: "10px",
-          left: "35px",
-          fontSize: 20,
-          color: "#fff",
-        }}
-      >{`${currentWordIndex + 1}/${listWord?.length}`}</p>
-      <img src={arrayImg[numberWrong]} width={600} />
-      <div
-        style={{
-          width: 600,
-          position: "absolute",
-          bottom: 200,
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-        }}
-      >
-        {arrayCharacterOfWord?.map((c, index) => {
-          return c?.correct === true ? (
-            <Button
-              key={index}
-              disabled
-              style={{ width: 40, margin: 2, fontWeight: 900, color: "red" }}
-            >
-              {c.character.toUpperCase()}
-            </Button>
-          ) : (
-            <Button
-              key={index}
-              disabled
-              type="dashed"
-              style={{
-                width: 40,
-                margin: 2,
-                backgroundColor: "#fff",
-                color: "#fff",
-              }}
-            >{`c`}</Button>
-          );
-        })}
-      </div>
-      {arrayCharacterOfWord?.find((e) => e.correct !== true) &&
-      numberWrong < 6 ? (
+    <>
+      <div style={{ position: "relative" }}>
+        <p
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "35px",
+            fontSize: 20,
+            color: "#fff",
+          }}
+        >{`${currentWordIndex + 1}/${listWord?.length}`}</p>
+        <img src={arrayImg[numberWrong]} width={600} />
         <div
           style={{
             width: 600,
             position: "absolute",
-            bottom: 0,
+            bottom: 200,
             display: "flex",
             flexWrap: "wrap",
-            justifyContent: "space-between",
+            justifyContent: "center",
           }}
         >
-          {Object.keys(characters)?.map((c) => {
-            return (
+          {arrayCharacterOfWord?.map((c, index) => {
+            return c?.correct === true ? (
               <Button
-                key={c}
-                disabled={characters[c]}
-                onClick={() => onClickACharacter(c)}
-                style={{ width: 40, margin: 2, fontWeight: 900 }}
-                type={characters[c] ? "dashed" : "primary"}
+                key={index}
+                disabled
+                style={{ width: 40, margin: 2, fontWeight: 900, color: "red" }}
               >
-                {c}
+                {c.character.toUpperCase()}
               </Button>
+            ) : (
+              <Button
+                key={index}
+                disabled
+                type="dashed"
+                style={{
+                  width: 40,
+                  margin: 2,
+                  backgroundColor: "#fff",
+                  color: "#fff",
+                }}
+              >{`c`}</Button>
             );
           })}
         </div>
-      ) : arrayCharacterOfWord?.find((e) => e.correct !== true) &&
-        numberWrong >= 6 ? (
-        <div
-          style={{
-            position: "absolute",
-            bottom: 20,
-            width: "600px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography.Title level={3} style={{ color: "red" }}>
-            Tiếc quá! Bạn thua rồi!!!
-          </Typography.Title>
-          <Button
-            onClick={playAgain}
+        {arrayCharacterOfWord?.find((e) => e.correct !== true) &&
+        numberWrong < 6 ? (
+          <div
             style={{
-              backgroundColor: "orange",
-              color: "#fff",
-              fontSize: 14,
-              fontWeight: 700,
+              width: 600,
+              position: "absolute",
+              bottom: 0,
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
             }}
           >
-            Chơi lại
-          </Button>
-        </div>
-      ) : (
-        <>
+            {Object.keys(characters)?.map((c) => {
+              return (
+                <Button
+                  key={c}
+                  disabled={characters[c]}
+                  onClick={() => onClickACharacter(c)}
+                  style={{ width: 40, margin: 2, fontWeight: 900 }}
+                  type={characters[c] ? "dashed" : "primary"}
+                >
+                  {c}
+                </Button>
+              );
+            })}
+          </div>
+        ) : arrayCharacterOfWord?.find((e) => e.correct !== true) &&
+          numberWrong >= 6 ? (
           <div
             style={{
               position: "absolute",
               bottom: 20,
+              width: "600px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
+            <Typography.Title level={3} style={{ color: "red" }}>
+              Tiếc quá! Bạn thua rồi!!!
+            </Typography.Title>
             <Button
-              onClick={nextWord}
+              onClick={playAgain}
               style={{
                 backgroundColor: "orange",
                 color: "#fff",
@@ -277,32 +261,81 @@ export const HangmanGamePlay = (props) => {
                 fontWeight: 700,
               }}
             >
-              Tiếp theo
+              Chơi lại
             </Button>
           </div>
-          <div
-            style={{
-              position: "absolute",
-              top: 20,
-              left: 620,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-            }}
-          >
-            <Typography.Title level={5}>
-              {wordInfo?.word || currentWord?.word}
-              <SoundOutlined style={{ marginLeft: 10 }} />
-            </Typography.Title>
-            <Typography.Text>
-              {wordInfo?.pronunciation?.all &&
-                `/${wordInfo?.pronunciation?.all}/`}
-            </Typography.Text>
-          </div>
-        </>
-      )}
-    </div>
+        ) : (
+          <>
+            <div
+              style={{
+                position: "absolute",
+                bottom: 20,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                onClick={nextWord}
+                style={{
+                  backgroundColor: "orange",
+                  color: "#fff",
+                  fontSize: 14,
+                  fontWeight: 700,
+                }}
+              >
+                Tiếp theo
+              </Button>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: 20,
+                left: 620,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+              }}
+            >
+              <Typography.Title level={5}>
+                {wordInfo?.word || currentWord?.word}
+                <SoundOutlined style={{ marginLeft: 10 }} />
+              </Typography.Title>
+              <Typography.Text>
+                {wordInfo?.pronunciation?.all &&
+                  `/${wordInfo?.pronunciation?.all}/`}
+              </Typography.Text>
+            </div>
+          </>
+        )}
+      </div>
+      <Modal
+        title="Tổng kết"
+        okText="Đóng"
+        onOk={() => setVisibleSumary(false)}
+        onCancel={() => setVisibleSumary(false)}
+        visible={visibleSumary}
+      >
+        <p
+          style={{ marginBottom: 10 }}
+        >{`Chúc mừng bạn đã học được thêm ${listWord.length} từ mới hôm nay. Cùng ôn tập lại nhé`}</p>
+        {listWord?.map((e, index) => {
+          return (
+            <Row key={index} justify="space-between">
+              <Col span={2}>{index + 1}</Col>
+              <Col span={8}>{e?.word}</Col>
+              <Col span={5}>
+                {e?.pronunciation ||
+                  JSON.parse(e?.valueFromWordAPI)?.pronunciation?.all}
+              </Col>
+              <Col span={9}>{e?.meaning}</Col>
+            </Row>
+          );
+        })}
+      </Modal>
+    </>
   );
 };
 

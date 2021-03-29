@@ -8,8 +8,8 @@ export const CrosswordGamePlay = (props) => {
   const data = {
     across: {
       1: {
-        clue: "Đây là câu hỏi số 1",
-        answer: "TWO",
+        clue: "Lục địa nào được phát hiện gần đây nhất",
+        answer: "chauuc",
         row: 0,
         col: 0,
       },
@@ -59,9 +59,7 @@ export const CrosswordGamePlay = (props) => {
     } else if (!isSetupMode) {
       refCrossword.current.reset();
     }
-    return () => {
-      
-    }
+    return () => {};
   }, [isSetupMode]);
   return (
     <div>
@@ -70,10 +68,10 @@ export const CrosswordGamePlay = (props) => {
         vào bảng
       </p>
       <Row gutter={[12, 12]}>
-        <Col span={10}>
+        <Col span={16}>
           <ThemeProvider
             theme={{
-              columnBreakpoint: "9999px",
+              columnBreakpoint: "768px",
               gridBackground: "#acf",
               cellBackground: "#ffe",
               cellBorder: "#fca",
@@ -91,7 +89,7 @@ export const CrosswordGamePlay = (props) => {
             />
           </ThemeProvider>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           {isSetupMode ? (
             <>
               <Row>
@@ -120,6 +118,7 @@ export const CrosswordGamePlay = (props) => {
                 value={props.deadline}
                 onFinish={() => {}}
               ></Statistic.Countdown>
+              <Button>Nộp bài</Button>
             </>
           )}
         </Col>
