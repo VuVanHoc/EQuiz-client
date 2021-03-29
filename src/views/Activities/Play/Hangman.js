@@ -12,15 +12,18 @@ import HangmanAudio from "../../../assets/audio/wonOpp.mp3";
 import WrongAnswer from "../../../assets/audio/WrongAnswer.wav";
 import CorrectAnswer from "../../../assets/audio/CorrectAnswer.wav";
 import WinnerSoundClapping from "../../../assets/audio/WinnerSoundClapping.wav";
+import ShowHint from "../../../assets/audio/SelectHint.wav";
+
 import axios from "axios";
 import http from "../../../api";
-import { SoundOutlined } from "@ant-design/icons";
+import { SoundOutlined, StarFilled, StarTwoTone } from "@ant-design/icons";
 
 export const HangmanGamePlay = (props) => {
   const audio = new Audio(HangmanAudio);
   const WrongAnswerAudio = new Audio(WrongAnswer);
   const CorrectAnswerAudio = new Audio(CorrectAnswer);
   const WinnerSoundAudio = new Audio(WinnerSoundClapping);
+  const ShowHintAudio = new Audio(ShowHint);
 
   const defaultListCharacter = {
     A: false,
@@ -66,7 +69,7 @@ export const HangmanGamePlay = (props) => {
   const initWorkingData = (index) => {
     console.log("=======", index);
     let a = listWord[index]?.word?.split("")?.map((e) => {
-      return { character: e, show: false };
+      return { character: e, correct: false };
     });
     console.log("aaaa:", a);
     setArrayCharacterOfWord(a);
@@ -85,8 +88,16 @@ export const HangmanGamePlay = (props) => {
   const [currentWord, setCurrentWord] = useState(null);
   const [wordInfo, setWordInfo] = useState(null);
   const [visibleSumary, setVisibleSumary] = useState(false);
+  const [totalHint, setTotalHint] = useState([
+    { used: false },
+    { used: false },
+    { used: false },
+    { used: false },
+    { used: false },
+  ]);
 
   const onClickACharacter = (character) => {
+    console.log(character);
     setCharacters({ ...characters, [character]: true });
     let currentWord = listWord[currentWordIndex];
     if (currentWord.word.toUpperCase().includes(character)) {
@@ -127,6 +138,13 @@ export const HangmanGamePlay = (props) => {
     setCurrentWordIndex(0);
     initWorkingData(0);
     setCharacters(defaultListCharacter);
+    setTotalHint([
+      { used: false },
+      { used: false },
+      { used: false },
+      { used: false },
+      { used: false },
+    ]);
   };
 
   const getDataFromWordsAPI = async (word) => {
@@ -161,6 +179,19 @@ export const HangmanGamePlay = (props) => {
       });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const showHint = (index) => {
+    ShowHintAudio.play();
+    let a = [...totalHint];
+    a[index].used = true;
+    setTotalHint(a);
+    for (let i = 0; i < arrayCharacterOfWord.length; i++) {
+      if (arrayCharacterOfWord[i].correct === false) {
+        onClickACharacter(arrayCharacterOfWord[i].character.toUpperCase());
+        return;
+      }
     }
   };
   return (
@@ -212,30 +243,44 @@ export const HangmanGamePlay = (props) => {
         </div>
         {arrayCharacterOfWord?.find((e) => e.correct !== true) &&
         numberWrong < 6 ? (
-          <div
-            style={{
-              width: 600,
-              position: "absolute",
-              bottom: 0,
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-            }}
-          >
-            {Object.keys(characters)?.map((c) => {
-              return (
-                <Button
-                  key={c}
-                  disabled={characters[c]}
-                  onClick={() => onClickACharacter(c)}
-                  style={{ width: 40, margin: 2, fontWeight: 900 }}
-                  type={characters[c] ? "dashed" : "primary"}
-                >
-                  {c}
-                </Button>
-              );
-            })}
-          </div>
+          <>
+            <div style={{ position: "absolute", top: 33, fontSize: 26 }}>
+              {totalHint.map((e, index) => {
+                return !e.used ? (
+                  <StarFilled
+                    key={index}
+                    style={{ color: "yellow", cursor: "pointer" }}
+                    onClick={() => showHint(index)}
+                  />
+                ) : null;
+              })}
+            </div>
+
+            <div
+              style={{
+                width: 600,
+                position: "absolute",
+                bottom: 0,
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+              }}
+            >
+              {Object.keys(characters)?.map((c) => {
+                return (
+                  <Button
+                    key={c}
+                    disabled={characters[c]}
+                    onClick={() => onClickACharacter(c)}
+                    style={{ width: 40, margin: 2, fontWeight: 900 }}
+                    type={characters[c] ? "dashed" : "primary"}
+                  >
+                    {c}
+                  </Button>
+                );
+              })}
+            </div>
+          </>
         ) : arrayCharacterOfWord?.find((e) => e.correct !== true) &&
           numberWrong >= 6 ? (
           <div
