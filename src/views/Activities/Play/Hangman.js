@@ -1,4 +1,4 @@
-import { Button, Row, Typography, Col, Modal } from "antd";
+import { Button, Row, Typography, Col, Modal, Carousel } from "antd";
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import theme1 from "../../../assets/Hangman/theme-balloon1.png";
@@ -17,6 +17,12 @@ import ShowHint from "../../../assets/audio/SelectHint.wav";
 import axios from "axios";
 import http from "../../../api";
 import { SoundOutlined, StarFilled, StarTwoTone } from "@ant-design/icons";
+import guide1 from "../../../assets/Hangman/guide1.png";
+import guide2 from "../../../assets/Hangman/guide2.png";
+import guide3 from "../../../assets/Hangman/guide3.png";
+import guide4 from "../../../assets/Hangman/guide4.png";
+import guide5 from "../../../assets/Hangman/guide5.png";
+import guide6 from "../../../assets/Hangman/guide6.png";
 
 export const HangmanGamePlay = (props) => {
   const audio = new Audio(HangmanAudio);
@@ -194,6 +200,9 @@ export const HangmanGamePlay = (props) => {
       }
     }
   };
+
+  const [visibleGuide, setvisibleGuide] = useState(true);
+
   return (
     <>
       <div style={{ position: "relative" }}>
@@ -379,6 +388,33 @@ export const HangmanGamePlay = (props) => {
             </Row>
           );
         })}
+      </Modal>
+      <Modal
+        title="Hướng dẫn chơi Ballon"
+        okText="Bắt đầu ngay"
+        visible={visibleGuide}
+        footer={[
+          <Button
+            onClick={() => {
+              setvisibleGuide(false);
+            }}
+            type="primary"
+          >
+            Bắt đầu ngay
+          </Button>,
+        ]}
+        onCancel={() => {
+          setvisibleGuide(false);
+        }}
+      >
+        <Carousel dotPosition="top">
+          <img alt="guide1" src={guide1} />
+          <img alt="guide2" src={guide2} />
+          <img alt="guide3" src={guide3} />
+          <img alt="guide4" src={guide4} />
+          <img alt="guide5" src={guide5} />
+          <img alt="guide6" src={guide6} />
+        </Carousel>
       </Modal>
     </>
   );
