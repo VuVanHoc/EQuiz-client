@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
     }),
     new webpack.ProgressPlugin(),
     new WebpackCopyPlugin({
-      patterns: [{ from: "./src/_redirects", to: "public" }],
+      patterns: [{ from: "./src/_redirects" }],
     }),
   ];
   let productionPlugins = [...basePlugins, new CleanWebpackPlugin()];
