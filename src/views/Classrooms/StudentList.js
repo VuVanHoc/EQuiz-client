@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Row, Table, Typography, Col, Card } from "antd";
+import { Row, Table, Typography, Col, Input } from "antd";
 
 export const StudentList = (props) => {
   const { Title, Text } = Typography;
@@ -42,15 +42,27 @@ export const StudentList = (props) => {
   ];
   return (
     <Row gutter={12}>
-      <Col span={6}>
+      {/* <Col span={6}>
         <Card title={"Cấu trúc dữ liệu & giải thuật"} size="small">
           <p>Giáo viên: {`${currentUser.fullName}`}</p>
           <p>{currentUser.email && `Email: ${currentUser.email}`}</p>
           <p>{currentUser.phone && `SĐT: ${currentUser.phone}`}</p>
           <p>Tổng số học sinh: {`${listStudent.length} `}</p>
         </Card>
-      </Col>
-      <Col span={18}>
+      </Col> */}
+      <Col span={24}>
+        <Row justify="space-between" style={{ marginBottom: 10 }}>
+          <Col>
+            <Title level={5}>Cấu trúc dữ liệu & giải thuật</Title>
+          </Col>
+          <Col>
+            <Input.Search
+              allowClear
+              enterButton
+              placeholder="Tìm kiếm học sinh"
+            />
+          </Col>
+        </Row>
         <Table
           loading={isFetching}
           size="small"

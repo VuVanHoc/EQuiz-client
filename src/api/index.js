@@ -31,7 +31,7 @@ export const interceptors = (store) => {
       if (error.response.data.status === 403) {
         store.dispatch(requestLogout());
       }
-      return Promise.reject(error);
+      return Promise.reject(error.response.data.message);
     }
   );
 };

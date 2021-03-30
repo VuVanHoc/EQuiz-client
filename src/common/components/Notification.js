@@ -27,3 +27,17 @@ export const NotificationError = (
     duration,
   });
 };
+
+export const NotificationWarning = (
+  title,
+  message,
+  duration,
+  placement = "topRight"
+) => {
+  notification.warning({
+    message: title,
+    description: message,
+    placement: placement,
+    duration,
+  });
+};

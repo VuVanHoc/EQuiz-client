@@ -12,6 +12,10 @@ import {
   Pagination,
   Popconfirm,
   Input,
+  Card,
+  Row,
+  Col,
+  Empty,
 } from "antd";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import {
@@ -22,6 +26,7 @@ import {
   Icon,
 } from "@ant-design/icons";
 import { requestFetchList } from "../../store/classroom/actions";
+import http from "../../api";
 
 export const ClassroomList = (props) => {
   const { currentUser, isFetching, totalResult, dataSource } = props;
@@ -117,6 +122,7 @@ export const ClassroomList = (props) => {
     },
   ];
 
+  const [listClassroomStudent, setListClassroomStudent] = useState([]);
   const deleteClassroom = (e, id) => {
     e.stopPropagation();
   };
@@ -124,9 +130,27 @@ export const ClassroomList = (props) => {
   const onChangePaging = (pageIndex, pageSize) => {
     props.requestFetchList({ pageIndex: pageIndex - 1, pageSize });
   };
+
+  const getListClassroomStudent = async () => {
+    try {
+      const res = await http.post(`api/classroom/getListClassroomForStudent`, {
+        orderBy: "createdDate",
+        orderByAsc: false,
+        userId: currentUser.userId,
+        searchText: "",
+      });
+      if (res) {
+        setListClassroomStudent(res.data);
+      }
+    } catch (error) {}
+  };
   useEffect(() => {
-    props.requestFetchList({ pageSize: 5 });
-  }, []);
+    if (currentUser.userType === ROLE_TYPE.TEACHER) {
+      props.requestFetchList({ pageSize: 5 });
+    } else {
+      getListClassroomStudent();
+    }
+  }, [currentUser]);
   return (
     <div>
       <div className="d-flex">
@@ -143,30 +167,71 @@ export const ClassroomList = (props) => {
         />
       </div>
 
-      <Table
-        // rowSelection={{ ...rowSelection }}
-        // scroll={{ x: 1500 }}
-        loading={isFetching}
-        onRow={(record, index) => {
-          return {
-            onClick: () =>
-              history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
-          };
-        }}
-        columns={columns}
-        pagination={{
-          total: totalResult,
-          onChange: (pageIndex, pageSize) => {
-            onChangePaging(pageIndex, pageSize);
-          },
-          pageSize: 5,
-          showTotal: (total) => {
-            return `Tổng số: ${total} kết quả`;
-          },
-        }}
-        rowKey={(record) => record.id}
-        dataSource={dataSource}
-      />
+      {currentUser.userType === ROLE_TYPE.TEACHER && (
+        <Table
+          // rowSelection={{ ...rowSelection }}
+          // scroll={{ x: 1500 }}
+          loading={isFetching}
+          onRow={(record, index) => {
+            return {
+              onClick: () =>
+                history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
+            };
+          }}
+          columns={columns}
+          pagination={{
+            total: totalResult,
+            onChange: (pageIndex, pageSize) => {
+              onChangePaging(pageIndex, pageSize);
+            },
+            pageSize: 5,
+            showTotal: (total) => {
+              return `Tổng số: ${total} kết quả`;
+            },
+          }}
+          rowKey={(record) => record.id}
+          dataSource={dataSource}
+        />
+      )}
+      <Row gutter={[12, 12]}>
+        {currentUser.userType === ROLE_TYPE.STUDENT &&
+        listClassroomStudent.length > 0
+          ? listClassroomStudent.map((classroom, index) => {
+              return (
+                <Col key={classroom.id}>
+                  <Card
+                    onClick={() =>
+                      history.push(`${ROUTES_PATH.CLASSROOMS}/${classroom.id}`)
+                    }
+                    hoverable
+                    style={{ width: 300 }}
+                    cover={
+                      <img src="https://picsum.photos/350/150" height={150} />
+                    }
+                  >
+                    <Card.Meta
+                      title={classroom.name}
+                      description={`Mã lớp học: ${classroom.code}`}
+                      avatar={
+                        <Avatar src="https://picsum.photos/64/64" size={64} />
+                      }
+                    ></Card.Meta>
+                  </Card>
+                </Col>
+              );
+            })
+          : currentUser.userType === ROLE_TYPE.STUDENT && (
+              <Row
+                justify="center"
+                align="middle"
+                style={{ width: "100%", height: 300 }}
+              >
+                <Col span={24}>
+                  <Empty description="Không có lớp học nào" />
+                </Col>
+              </Row>
+            )}
+      </Row>
     </div>
   );
 };

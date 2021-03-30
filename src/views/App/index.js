@@ -45,18 +45,18 @@ export const App = (props) => {
       icon: <BookOutlined />,
       path: ROUTES_PATH.QUESTIONS,
     },
-    {
-      key: "documents",
-      title: "Tài liệu",
-      icon: <FileSearchOutlined />,
-      path: ROUTES_PATH.DOCUMENTS,
-    },
-    {
-      key: "calendar",
-      title: "Lịch",
-      icon: <CalendarOutlined />,
-      path: ROUTES_PATH.CALENDAR,
-    },
+    // {
+    //   key: "documents",
+    //   title: "Tài liệu",
+    //   icon: <FileSearchOutlined />,
+    //   path: ROUTES_PATH.DOCUMENTS,
+    // },
+    // {
+    //   key: "calendar",
+    //   title: "Lịch",
+    //   icon: <CalendarOutlined />,
+    //   path: ROUTES_PATH.CALENDAR,
+    // },
     {
       key: "import",
       title: "Nhập dữ liệu",
@@ -73,10 +73,16 @@ export const App = (props) => {
     },
     {
       key: "activities",
-      title: "Các hoạt động",
+      title: "Luyện tập ngay",
       icon: <AppstoreOutlined />,
-      path: ROUTES_PATH.ACTIVITIES,
+      path: `${ROUTES_PATH.ACTIVITIES}/practice`,
     },
+    // {
+    //   key: "calendar",
+    //   title: "Lịch",
+    //   icon: <CalendarOutlined />,
+    //   path: ROUTES_PATH.CALENDAR,
+    // },
   ];
   return (
     <Router>
@@ -90,7 +96,12 @@ export const App = (props) => {
           </div>
         </Header>
         <Layout className="body">
-          <Sider className="sider" collapsible theme="light">
+          <Sider
+            className="sider"
+            defaultCollapsed={true}
+            collapsible
+            theme="light"
+          >
             <Menu
               theme="light"
               mode="inline"
