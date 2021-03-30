@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
+const WebpackCopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env, argv) => {
   const isDev = argv.mode === "development";
@@ -22,6 +23,9 @@ module.exports = (env, argv) => {
       filename: isDev ? "[name].css" : "static/css/[name].[hash:6].css",
     }),
     new webpack.ProgressPlugin(),
+    new WebpackCopyPlugin({
+      patterns: [{ from: "./src/_redirects", to: "public" }],
+    }),
   ];
   let productionPlugins = [...basePlugins, new CleanWebpackPlugin()];
   return {
