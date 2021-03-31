@@ -10,79 +10,141 @@ export const CrosswordGamePlay = (props) => {
   const data = {
     across: {
       1: {
-        clue: "Lục địa nào được phát hiện gần đây nhất",
-        answer: "chauuc",
+        clue: "Dark purplish-red",
+        answer: "CRIMSON",
         row: 0,
-        col: 0,
-      },
-      2: {
-        clue: "Đây là nội dung câu hỏi số 2",
-        answer: "2021",
-        row: 1,
         col: 2,
       },
-      3: {
-        clue: "Câu hỏi số 3: Đây là gì?",
-        answer: "1234567",
+      4: {
+        clue: "Use a spade to make a hole",
+        answer: "DIG",
         row: 2,
         col: 0,
       },
-      4: {
-        clue: "Đây là câu hỏi số 1",
-        answer: "TWO",
-        row: 3,
-        col: 1,
-      },
-      5: {
-        clue: "Đây là nội dung câu hỏi số 2",
-        answer: "2021",
-        row: 4,
-        col: 2,
-      },
       6: {
-        clue: "Câu hỏi số 3: Đây là gì?",
-        answer: "1234567",
-        row: 5,
-        col: 3,
+        clue: "Painting, sculpture or drawing",
+        answer: "ART",
+        row: 2,
+        col: 8,
       },
-      7: {
-        clue: "Lục địa nào được phát hiện gần đây nhất",
-        answer: "chauuc",
+      8: {
+        clue: "Something you wear on your head to protect you from the sun",
+        answer: "HAT",
+        row: 3,
+        col: 4,
+      },
+      9: {
+        clue: "A wobby coloured dessert. It's yummy with ice cream",
+        answer: "JELLY",
+        row: 4,
+        col: 0,
+      },
+      11: {
+        clue: "Elegant birds with long necks",
+        answer: "SWANS",
+        row: 4,
+        col: 6,
+      },
+      13: {
+        clue: "What you do if someone tell you something funny",
+        answer: "LAUGH",
         row: 6,
         col: 0,
       },
-      8: {
-        clue: "Đây là nội dung câu hỏi số 2",
-        answer: "2021",
-        row: 7,
-        col: 2,
+      16: {
+        clue: "A book with maps of different countries",
+        answer: "ATLAS",
+        row: 6,
+        col: 6,
       },
-      9: {
-        clue: "Câu hỏi số 3: Đây là gì?",
-        answer: "1234567",
+      18: {
+        clue: "1, 3, 5, 7, 9 are all this kind of number (they are not even)",
+        answer: "ODD",
+        row: 7,
+        col: 4,
+      },
+      19: {
+        clue: "A small green vegetable that comes in a pod with others",
+        answer: "PEA",
         row: 8,
         col: 0,
       },
-      10: {
-        clue: "Đây là câu hỏi số 1",
-        answer: "TWO",
-        row: 9,
-        col: 1,
+      20: {
+        clue: "An enclose for pigs to live in",
+        answer: "STY",
+        row: 8,
+        col: 8,
       },
-      11: {
-        clue: "Đây là nội dung câu hỏi số 2",
-        answer: "2021",
+      21: {
+        clue: "A kind of very high-quality glass",
+        answer: "CRYSTAL",
         row: 10,
         col: 2,
       },
-      12: {
-        clue: "Câu hỏi số 3: Đây là gì?",
-        answer: "1234567",
-        row: 11,
+    },
+    down: {
+      2: {
+        clue:
+          "A mosquito bite can be very _____ and make you want to scartch it",
+        answer: "ITCHY",
+        row: 0,
+        col: 4,
+      },
+      3: {
+        clue: "Dots",
+        answer: "SPOTS",
+        row: 0,
+        col: 6,
+      },
+      5: {
+        clue: "Small blocks of this are good to make a drink cold",
+        answer: "ICE",
+        row: 2,
+        col: 1,
+      },
+      7: {
+        clue: "Sprint or jog",
+        answer: "RUN",
+        row: 2,
+        col: 9,
+      },
+      10: {
+        clue: "The part of your body from your hip to your ankle",
+        answer: "LEG",
+        row: 4,
         col: 3,
       },
+      12: {
+        clue: "Soaked with water",
+        answer: "LEG",
+        row: 4,
+        col: 7,
+      },
+      14: {
+        clue: "The number of years since you were born is your ____",
+        answer: "AGE",
+        row: 7,
+        col: 1,
+      },
+      15: {
+        clue: "Sweet substance made by bees",
+        answer: "HONEY",
+        row: 6,
+        col: 4,
+      },
+      16: {
+        clue: "Another word for a grown-up",
+        answer: "ADULT",
+        row: 6,
+        col: 6,
+      },
+      17: {
+        clue: "A small often black insect that lives in a colony",
+        answer: "ANT",
+        row: 6,
+        col: 9,
+      },
     },
-    down: {},
   };
   const onCorrect = (direction, number, answer) => {
     console.log(direction, number, answer);
