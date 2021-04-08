@@ -5,6 +5,8 @@ import ActivityDetail from "./ActivityDetail";
 import ActivityList from "./ActivityList";
 import CreateActivity from "./CreateActivity";
 import PracticeActivity from "./PracticeActivity";
+import HistoryPracticeActivity from "./HistoryPracticeActivity";
+
 import { ROUTES_PATH } from "../../common/Constants";
 
 export const Activities = (props) => {
@@ -20,6 +22,11 @@ export const Activities = (props) => {
         exact
         path={`${ROUTES_PATH.ACTIVITIES}/practice`}
         component={PracticeActivity}
+      />
+      <Route
+        exact
+        path={`${ROUTES_PATH.ACTIVITIES}/history`}
+        component={HistoryPracticeActivity}
       />
       <Route
         exact

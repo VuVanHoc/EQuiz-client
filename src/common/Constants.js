@@ -30,7 +30,7 @@ export const ACTIVITY_TYPE = {
   MATRIX_WORD: "MATRIX_WORD",
 };
 export const MAP_ACTIVITY_NAME = {
-  HANGMAN: "Hangman",
+  HANGMAN: "Đoán từ với Balloon",
   FLASH_CARD: "Thẻ Flashcard",
   MATRIX_WORD: "Crossword",
 };

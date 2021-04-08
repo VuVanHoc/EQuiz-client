@@ -123,7 +123,7 @@ export const CrosswordGamePlay = (props) => {
       14: {
         clue: "The number of years since you were born is your ____",
         answer: "AGE",
-        row: 7,
+        row: 6,
         col: 1,
       },
       15: {
@@ -224,6 +224,7 @@ export const CrosswordGamePlay = (props) => {
                 value={props.deadline}
                 onFinish={() => {}}
               ></Statistic.Countdown>
+              {/* <TickingClock /> */}
               <Button
                 style={{ width: 100 }}
                 danger

@@ -61,7 +61,8 @@ export const ClassroomList = (props) => {
       },
     },
     {
-      title: "Người quản lý",
+      align: "center",
+      title: "Quản lý",
       dataIndex: "responsible",
       render: (_, record) => {
         return (
@@ -85,29 +86,25 @@ export const ClassroomList = (props) => {
               </div>
             }
           >
-            <Avatar>H</Avatar>
+            <Avatar>{record.responsibleAvatar}</Avatar>
           </Popover>
         );
       },
     },
     {
+      align: "center",
       title: "Thao tác",
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (
           <>
-            <EditTwoTone
-              style={{ fontSize: 16, marginRight: 16 }}
-              twoToneColor="#6AC3E8"
-              onClick={(e) => e.stopPropagation()}
-            />
             <Popconfirm
               width={150}
               title="Bạn chắc chắn muốn xoá lớp học này không?"
               okText="Xoá"
               cancelText="Huỷ"
               placement="topRight"
-              onConfirm={deleteClassroom}
+              onConfirm={(e) => deleteClassroom(e, record.id)}
               onCancel={(e) => e.stopPropagation()}
             >
               <DeleteTwoTone
@@ -123,8 +120,16 @@ export const ClassroomList = (props) => {
   ];
 
   const [listClassroomStudent, setListClassroomStudent] = useState([]);
-  const deleteClassroom = (e, id) => {
+  const deleteClassroom = async (e, id) => {
     e.stopPropagation();
+    try {
+      const res = await http.delete(`api/classroom/delete/${id}`);
+      if (res) {
+        props.requestFetchList({ pageSize: 5 });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onChangePaging = (pageIndex, pageSize) => {

@@ -1,14 +1,44 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Typography, Table, Tag, Input } from "antd";
+import { Typography, Table, Tag, Input, Popconfirm } from "antd";
 import { ROLE_TYPE } from "../../common/Constants";
 import "./Activity.scss";
+import Avatar from "antd/lib/avatar/avatar";
+import { DeleteTwoTone } from "@ant-design/icons";
 
 export const ActivityList = (props) => {
   const { isFetching, currentUser } = props;
   const { Text, Title } = Typography;
 
-  const data = [];
+  const data = [
+    {
+      name: "Từ vựng chủ đề Học tập",
+      type: "HANGMAN",
+      createdDate: "04/04/2021 17:00 PM",
+    },
+    {
+      name: "Từ vựng chủ đề Trái cây",
+      type: "HANGMAN",
+      createdDate: "04/04/2021 17:00 PM",
+      level: "MEDIUM",
+    },
+    {
+      name: "Từ vựng chủ đề Môi trường",
+      type: "HANGMAN",
+      createdDate: "04/04/2021 17:00 PM",
+    },
+    {
+      name: "Đoán ô chữ",
+      type: "MATRIX_WORD",
+      createdDate: "04/04/2021 17:00 PM",
+      level: "HARD",
+    },
+    {
+      name: "Từ vựng chủ đề Học tập",
+      type: "HANGMAN",
+      createdDate: "04/04/2021 17:00 PM",
+    },
+  ];
 
   const columns = [
     {
@@ -18,17 +48,20 @@ export const ActivityList = (props) => {
     {
       title: "Loại hoạt động",
       dataIndex: "type",
+      render: (value) => {
+        return <p>{value === "HANGMAN" ? `Ballon` : "Crossword"}</p>;
+      },
     },
     {
       title: "Mức độ",
       dataIndex: "level",
       render: (level) => {
         switch (level) {
-          case 1:
+          case "EASY":
             return <Tag color="blue">Dễ</Tag>;
-          case 2:
+          case "MEDIUM":
             return <Tag color="orange">Trung bình</Tag>;
-          case 3:
+          case "HARD":
             return <Tag color="red">Khó</Tag>;
           default:
             return <Tag color="blue">Dễ</Tag>;
@@ -36,18 +69,40 @@ export const ActivityList = (props) => {
       },
     },
     {
-      title: "Từ khoá",
-      dataIndex: "tags",
-      render: (_, record) => {
-        return record?.tags?.map((e, index) => (
-          <Tag key={index} color="">
-            {e}
-          </Tag>
-        ));
+      title: "Ngày tạo",
+      dataIndex: "createdDate",
+    },
+    {
+      align: "center",
+      title: "Người tạo",
+      render: () => {
+        return <Avatar>H</Avatar>;
       },
     },
     {
-      title: "Người tạo",
+      title: "Hành động",
+      render: (_, record) => {
+        // return <ActionMenu record={record} />;
+        return (
+          <>
+            <Popconfirm
+              width={150}
+              title="Bạn chắc chắn muốn xoá lớp học này không?"
+              okText="Xoá"
+              cancelText="Huỷ"
+              placement="topRight"
+              // onConfirm={(e) => deleteClassroom(e, record.id)}
+              // onCancel={(e) => e.stopPropagation()}
+            >
+              <DeleteTwoTone
+                style={{ fontSize: 16 }}
+                twoToneColor="red"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Popconfirm>
+          </>
+        );
+      },
     },
   ];
   return (

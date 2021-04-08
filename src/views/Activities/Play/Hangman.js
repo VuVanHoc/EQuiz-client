@@ -1,5 +1,5 @@
 import { Button, Row, Typography, Col, Modal, Carousel } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import theme1 from "../../../assets/Hangman/theme-balloon1.png";
 import theme2 from "../../../assets/Hangman/theme-balloon2.png";
@@ -61,7 +61,7 @@ export const HangmanGamePlay = (props) => {
   };
   const { listWord } = props;
   const [characters, setCharacters] = useState(defaultListCharacter);
-
+  const refCarosel = useRef(null);
   const [winner, setWinner] = useState(false);
   useEffect(() => {
     initWorkingData(0);
@@ -368,6 +368,7 @@ export const HangmanGamePlay = (props) => {
       <Modal
         title="Tổng kết"
         okText="Đóng"
+        cancelText="Huỷ"
         onOk={() => setVisibleSumary(false)}
         onCancel={() => setVisibleSumary(false)}
         visible={visibleSumary}
@@ -382,7 +383,8 @@ export const HangmanGamePlay = (props) => {
               <Col span={8}>{e?.word}</Col>
               <Col span={5}>
                 {e?.pronunciation ||
-                  JSON.parse(e?.valueFromWordAPI)?.pronunciation?.all}
+                  (e?.valueFromWordAPI &&
+                    JSON.parse(e?.valueFromWordAPI)?.pronunciation?.all)}
               </Col>
               <Col span={9}>{e?.meaning}</Col>
             </Row>
@@ -394,6 +396,7 @@ export const HangmanGamePlay = (props) => {
         okText="Bắt đầu ngay"
         visible={visibleGuide}
         footer={[
+          <Button onClick={() => refCarosel.current.next()}>Tiếp theo</Button>,
           <Button
             onClick={() => {
               setvisibleGuide(false);
@@ -407,7 +410,7 @@ export const HangmanGamePlay = (props) => {
           setvisibleGuide(false);
         }}
       >
-        <Carousel dotPosition="top">
+        <Carousel dotPosition="top" ref={refCarosel}>
           <img alt="guide1" src={guide1} />
           <img alt="guide2" src={guide2} />
           <img alt="guide3" src={guide3} />

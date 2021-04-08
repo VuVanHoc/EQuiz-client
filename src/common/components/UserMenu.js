@@ -35,12 +35,12 @@ function UserMenu(props) {
       >
         Thông báo
       </Menu.Item>
-      <Menu.Item
+      {/* <Menu.Item
         icon={<SettingOutlined />}
         onClick={() => gotoPage(ROUTES_PATH.SETTINGS)}
       >
         Cài đặt
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item icon={<PoweroffOutlined />} onClick={requestLogout}>
         Đăng xuất
       </Menu.Item>

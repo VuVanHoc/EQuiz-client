@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams } from "react-router";
 import {
@@ -25,7 +25,8 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import StudentList from "./StudentList";
-// import HistoryClassroom from "./HistoryClassroom";
+import http from "../../api";
+import { NotificationSuccess } from "../../common/components/Notification";
 
 export const ClassroomDetail = (props) => {
   const { currentUser } = props;
@@ -37,25 +38,63 @@ export const ClassroomDetail = (props) => {
 
   const [roomType, setRoomType] = useState("PRIVATE");
   const [classroomInfo, setClassroomInfo] = useState({
-    code: "JNLH9h90",
-    name: "Cấu trúc dữ liệu & giải thuật",
-    isPrivate: true,
-    classroomType: "PRIVATE",
-    password: "123123",
-    description:
-      "Đây là mô tả về lớp Cấu trúc dữ liệu & giải thuật\nFrom UET <3",
-    responsibleName: "Vũ Văn Học",
-    responsiblePhone: "0987773399",
-    responsibleEmail: "hocvanvu1999@gmail.com",
-    rating: 6,
+    // code: "JNLH9h90",
+    // name: "Cấu trúc dữ liệu & giải thuật",
+    // private: true,
+    // classroomType: "PRIVATE",
+    // password: "123123",
+    // description:
+    //   "Đây là mô tả về lớp Cấu trúc dữ liệu & giải thuật\nFrom UET <3",
+    // responsibleName: "Vũ Văn Học",
+    // responsiblePhone: "0987773399",
+    // responsibleEmail: "hocvanvu1999@gmail.com",
+    // rating: 6,
   });
 
+  useEffect(() => {
+    if (id) getClassroomDetail(id);
+    return () => {
+      setClassroomInfo({});
+    };
+  }, []);
+
+  const [form] = Form.useForm();
+  const getClassroomDetail = async (id) => {
+    try {
+      const res = await http.get(`api/classroom/detail/${id}`);
+      if (res) {
+        setClassroomInfo({
+          ...res,
+          classroomType: res.private ? "PRIVATE" : "PUBLIC",
+        });
+        form.setFieldsValue({
+          ...res,
+          classroomType: res.private ? "PRIVATE" : "PUBLIC",
+        });
+        setRoomType(res.private ? "PRIVATE" : "PUBLIC");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const onChangeRoomType = (e) => {
     setRoomType(e.target.value);
   };
-  const submitFormUpdateClassroom = (values) => {
+  const submitFormUpdateClassroom = async (values) => {
     // Call api update here
     console.log(values);
+    try {
+      const res = await http.post(`api/classroom/update`, {
+        ...values,
+        id: classroomInfo.id,
+      });
+      if (res) {
+        NotificationSuccess(null, "Cập nhật thành công");
+      }
+      getClassroomDetail(res.id);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const columnHistory = [
@@ -80,7 +119,6 @@ export const ClassroomDetail = (props) => {
   ];
   return (
     <div>
-      {/* <Affix offsetTop={84}> */}
       <Breadcrumb>
         <Breadcrumb.Item>
           <Link to={ROUTES_PATH.CLASSROOMS}>Danh sách lớp học</Link>
@@ -96,6 +134,7 @@ export const ClassroomDetail = (props) => {
               <Title level={5}>Thông tin lớp học</Title>
               {currentUser.userType === ROLE_TYPE.TEACHER && (
                 <Form
+                  form={form}
                   initialValues={classroomInfo}
                   onFinish={submitFormUpdateClassroom}
                 >
@@ -106,7 +145,7 @@ export const ClassroomDetail = (props) => {
                     labelAlign="left"
                     name="code"
                   >
-                    <Input disabled type="text" />
+                    <Input readOnly type="text" />
                   </Form.Item>
                   <Form.Item
                     colon={false}
