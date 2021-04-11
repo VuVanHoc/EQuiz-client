@@ -16,6 +16,7 @@ import { Flashcard } from "./Setup/Flashcard";
 import { Hangman } from "./Setup/Hangman";
 import { CrosswordGamePlay } from "./Play/Crossword";
 import { HangmanGamePlay } from "./Play/Hangman";
+import { CrosswordSetup } from "./Setup/CrosswordSetup";
 export const CreateActivity = (props) => {
   const { Title, Text } = Typography;
   const { Step } = Steps;
@@ -39,7 +40,49 @@ export const CreateActivity = (props) => {
   ]);
   const [listWordHangman, setListwordHangman] = useState([templateHangman]);
   const [form] = Form.useForm();
-
+  const [dataCrossword, setDataCrossword] = useState({
+    across: {
+      1: {
+        clue: "Dark purplish-red",
+        answer: "CRIMSON",
+        row: 0,
+        col: 2,
+      },
+      2: {
+        clue: "Use a spade to make a hole",
+        answer: "DIG",
+        row: 2,
+        col: 0,
+      },
+      3: {
+        clue: "Painting, sculpture or drawing",
+        answer: "ARTART",
+        row: 2,
+        col: 8,
+      },
+    },
+    down: {
+      1: {
+        clue:
+          "A mosquito bite can be very _____ and make you want to scartch it",
+        answer: "ITCHY",
+        row: 0,
+        col: 4,
+      },
+      2: {
+        clue: "Dots",
+        answer: "SPOTS",
+        row: 0,
+        col: 6,
+      },
+      3: {
+        clue: "Small blocks of this are good to make a drink cold",
+        answer: "ICE",
+        row: 2,
+        col: 1,
+      },
+    },
+  });
   // FUNCTION, ACTION HERE
   const changeStep = (current) => {
     if (currentStep === 0) {
@@ -90,6 +133,65 @@ export const CreateActivity = (props) => {
       { ...listWordHangman[index], word: value },
       ...listWordHangman.slice(index + 1, listWordHangman.length),
     ]);
+  };
+
+  // ACTION FOR CROSSWORD
+  const deleteQuestion = (type, key) => {
+    console.log(type, key);
+    let newData = { ...dataCrossword };
+    let lastKey = null;
+    let totalQuestionByType = Object.keys(dataCrossword[type]).length;
+
+    if (key === totalQuestionByType) {
+      delete newData[type][key];
+      setDataCrossword(newData);
+      return;
+    }
+    Object.keys(newData[type]).forEach((k) => {
+      // if(k < key) {
+      //   continue;
+      // }
+      if (k === key) {
+        lastKey = k;
+      }
+      if (k > key) {
+        newData[type][k - 1] = { ...newData[type][k] };
+        lastKey = k;
+      }
+    });
+    delete newData[type][lastKey];
+    setDataCrossword(newData);
+  };
+  const addQuestionCrossword = (type) => {
+    let totalQuestionByType = Object.keys(dataCrossword[type]).length;
+
+    let currentData = { ...dataCrossword[type] };
+    currentData = {
+      ...currentData,
+      [totalQuestionByType + 1]: {
+        clue: "",
+        answer: "",
+        row: 0,
+        col: 0,
+      },
+    };
+    let newData = { ...dataCrossword, [type]: currentData };
+    setDataCrossword(newData);
+  };
+  const updateDataQuestionCrossword = (type, index, key, value) => {
+    console.log(type, index, key, value);
+    let newData = { ...dataCrossword };
+    if ((key === "row" || key === "col") && value < 0) {
+      return;
+    }
+    if (key === "row" || key === "col") {
+    }
+
+    if (key === "answer") {
+      value = value.toUpperCase();
+    }
+    newData[type][index][key] = value;
+    setDataCrossword(newData);
   };
   // RENDER FUNCTION HERE
   const renderByStep = (step) => {
@@ -186,6 +288,14 @@ export const CreateActivity = (props) => {
               updateWord={updateWord}
             />
           )}
+          {basicInfoActivity.type === ACTIVITY_TYPE.MATRIX_WORD && (
+            <CrosswordSetup
+              data={dataCrossword}
+              deleteQuestion={deleteQuestion}
+              addQuestionCrossword={addQuestionCrossword}
+              updateDataQuestionCrossword={updateDataQuestionCrossword}
+            />
+          )}
         </div>
       );
     } else if (step === 2) {
@@ -195,7 +305,7 @@ export const CreateActivity = (props) => {
             MAP_ACTIVITY_NAME[basicInfoActivity.type]
           }`}</Title>
           {basicInfoActivity.type === ACTIVITY_TYPE.MATRIX_WORD && (
-            <CrosswordGamePlay isSetupMode={true} />
+            <CrosswordGamePlay isSetupMode={true} data={dataCrossword} />
           )}
           {basicInfoActivity.type === ACTIVITY_TYPE.HANGMAN && (
             <HangmanGamePlay listWord={listWordHangman} isSetupMode={true} />
@@ -209,8 +319,8 @@ export const CreateActivity = (props) => {
       <Title level={3} className="header-table">
         Tạo hoạt động
       </Title>
-      <Row>
-        <Col span={8}>
+      <Row gutter={[12]}>
+        <Col span={4}>
           <Steps
             size="default"
             onChange={changeStep}
@@ -232,7 +342,7 @@ export const CreateActivity = (props) => {
           </Steps>
         </Col>
 
-        <Col span={16}>
+        <Col span={20}>
           <div className="right-content">{renderByStep(currentStep)} </div>
         </Col>
       </Row>
