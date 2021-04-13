@@ -7,12 +7,9 @@ import Modal from "antd/lib/modal/Modal";
 
 export const CrosswordGamePlay = (props) => {
   const { isSetupMode, data, saveActivity } = props;
-  const onCorrect = (direction, number, answer) => {
-    console.log(direction, number, answer);
-  };
-  const onCrosswordCorrect = (value) => {
-    console.log(value);
-  };
+
+  const [totalCorrect, setTotalCorrect] = useState(0);
+
   const refCrossword = useRef(null);
   useEffect(() => {
     if (refCrossword && isSetupMode) {
@@ -24,6 +21,29 @@ export const CrosswordGamePlay = (props) => {
   }, [isSetupMode]);
 
   const [visibleDeleteAnswered, setVisibleDeleteAnswered] = useState(false);
+
+  const finishPractice = () => {
+    const totalQuestion =
+      Object.keys(data.across).length + Object.keys(data.down).length;
+
+    console.log("Total question:", totalQuestion, totalCorrect);
+
+    if (refCrossword.current.isCrosswordCorrect()) {
+      console.log("Correct");
+    } else {
+      console.log("Not correct");
+    }
+  };
+  const onCorrect = (direction, number, answer) => {
+    // setTotalCorrect(totalCorrect + 1);
+  };
+  const onCrosswordCorrect = (value) => {
+    // console.log(value);
+  };
+  const onCellChange = (a, b) => {
+    console.log(a, b);
+    // setTotalCorrect(totalCorrect - 1 >= 0 ? totalCorrect - 1 : 0);
+  };
   return (
     <div>
       <Typography.Text>
@@ -31,9 +51,9 @@ export const CrosswordGamePlay = (props) => {
         vào bảng
       </Typography.Text>
       <br />
-      <Typography.Text type="danger">
+      {/* <Typography.Text type="danger">
         Các đáp án cần nhập không dấu và không chứa khoảng trắng
-      </Typography.Text>
+      </Typography.Text> */}
       <Row gutter={[12, 12]}>
         <Col span={16}>
           <ThemeProvider
@@ -53,6 +73,7 @@ export const CrosswordGamePlay = (props) => {
               id="CrosswordPlay"
               onCorrect={onCorrect}
               onCrosswordCorrect={onCrosswordCorrect}
+              onCellChange={onCellChange}
             />
           </ThemeProvider>
         </Col>
@@ -82,11 +103,11 @@ export const CrosswordGamePlay = (props) => {
             </>
           ) : (
             <>
-              <Statistic.Countdown
+              {/* <Statistic.Countdown
                 title="Thời gian"
                 value={props.deadline}
                 onFinish={() => {}}
-              ></Statistic.Countdown>
+              ></Statistic.Countdown> */}
               {/* <TickingClock /> */}
               <Button
                 style={{ width: 100 }}
@@ -97,7 +118,11 @@ export const CrosswordGamePlay = (props) => {
                 Xoá tất cả
               </Button>
 
-              <Button style={{ width: 100 }} type="primary">
+              <Button
+                style={{ width: 100 }}
+                type="primary"
+                onClick={finishPractice}
+              >
                 Nộp bài
               </Button>
             </>

@@ -1,43 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Typography, Table, Tag, Input } from "antd";
-import { ROLE_TYPE } from "../../common/Constants";
+import { ROLE_TYPE, MAP_ACTIVITY_NAME } from "../../common/Constants";
 import "./Activity.scss";
+import http from "../../api";
+import moment from "moment";
 
 export const HistoryPracticeActivity = (props) => {
-  const { isFetching, currentUser } = props;
+  const { currentUser } = props;
   const { Text, Title } = Typography;
+  const [historyPractice, setHistoryPractice] = useState({});
 
-  const data = [
-    {
-      name: "Học từ vựng Tiếng Anh với Balloon",
-      startTime: "05/04/2021 20:09 PM",
-      endTime: "05/04/2021 20:45 PM",
-      result: "7/10",
-      type: "HANGMAN",
-      level: "HARD",
-    },
-    {
-      name: "Học từ vựng Tiếng Anh với Balloon",
-      startTime: "04/04/2021 23:09 PM",
-      endTime: "04/04/2021 23:30 PM",
-      result: "7/10",
-      type: "HANGMAN",
-    },
-    {
-      name: "Ô chữ chủ đề Học tập",
-      startTime: "04/04/2021 23:09 PM",
-      endTime: "04/04/2021 23:30 PM",
-      result: "15/20",
-      type: "MATRIX_WORD",
-      level: "MEDIUM",
-    },
-  ];
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    fetchHistoryPractice({ pageIndex: 0, pageSize: 5 });
+  }, []);
+
+  const fetchHistoryPractice = async (data) => {
+    try {
+      setIsFetching(true);
+
+      const res = await http.post(
+        `api/activity/getListHistoryPractice?pageIndex=${data.pageIndex}&pageSize=${data.pageSize}`,
+        {
+          orderBy: "createdDate",
+          orderByAsc: data.orderByAsc,
+          userId: currentUser.userId,
+          responsibleId: currentUser.userId,
+          searchText: data.searchText || "",
+        }
+      );
+      if (res) {
+        setHistoryPractice(res);
+        setIsFetching(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsFetching(true);
+    }
+  };
 
   const columns = [
     {
       title: "Tên hoạt động",
       dataIndex: "name",
+      render: (name, record) => {
+        return name ? name : MAP_ACTIVITY_NAME[record.type];
+      },
     },
     {
       title: "Loại hoạt động",
@@ -65,10 +75,16 @@ export const HistoryPracticeActivity = (props) => {
     {
       title: "Thời gian bắt đầu",
       dataIndex: "startTime",
+      render: (startTime) => {
+        return startTime ? moment(startTime).format("DD/MM/YYYY HH:mm A") : "";
+      },
     },
     {
       title: "Thời gian kết thúc",
       dataIndex: "endTime",
+      render: (endTime) => {
+        return endTime ? moment(endTime).format("DD/MM/YYYY HH:mm A") : "";
+      },
     },
     {
       title: "Kết quả",
@@ -95,8 +111,18 @@ export const HistoryPracticeActivity = (props) => {
         // rowKey={(record) => record.id}
         loading={isFetching}
         columns={columns}
-        dataSource={data}
-        pagination={{ pageSize: 5 }}
+        dataSource={historyPractice.data}
+        pagination={{
+          total: historyPractice.total || 0,
+          onChange: (pageIndex, pageSize) => {
+            fetchHistoryPractice({ pageIndex, pageSize });
+          },
+          pageSize: 5,
+          showTotal: (total) => {
+            return `Tổng số: ${total} kết quả`;
+          },
+        }}
+        rowKey={(record) => record.id}
       />
     </div>
   );

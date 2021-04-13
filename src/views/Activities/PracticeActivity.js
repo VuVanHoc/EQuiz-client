@@ -10,6 +10,7 @@ import http from "../../api";
 import { LogoutOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import LevelDropdown from "../../common/components/LevelDropdown";
 import SubjectDropdown from "./SubjectDropdown";
+import { NotificationSuccess } from "../../common/components/Notification";
 
 export const PracticeActivity = (props) => {
   const styleBtnExit = {
@@ -22,7 +23,10 @@ export const PracticeActivity = (props) => {
 
   const [activityType, setActivityType] = useState(null);
   const [visibleLevelHangman, setVisibleLevelHangman] = useState(false);
-  const [levelHangmanSelected, setLevelhangmanSelected] = useState("EASY");
+  const [levelSelected, setLevelSelected] = useState("EASY");
+  const [startTimePractice, setStartTimePractice] = useState(
+    new Date().getTime()
+  );
 
   const [historyMode, setHistoryMode] = useState(false);
 
@@ -67,6 +71,7 @@ export const PracticeActivity = (props) => {
   const [visibleModalStartCrossword, setvisibleModalStartCrossword] = useState(
     false
   );
+  const [dataCrossword, setDataCrossword] = useState({});
 
   const selectCrossword = () => {
     setvisibleModalStartCrossword(true);
@@ -77,11 +82,64 @@ export const PracticeActivity = (props) => {
   const onOkStartCrossword = () => {
     formStartCrossword.validateFields().then((values) => {
       console.log(values);
+      getRandomCrossword(values.level, values.subject);
     });
   };
 
+  const getRandomCrossword = async (level, subject) => {
+    try {
+      const res = await http.get(
+        `api/activity/getRandomCrossword?level=${level}&subject=${subject}`
+      );
+      if (res) {
+        setDataCrossword(res);
+        setActivityType(ACTIVITY_TYPE.MATRIX_WORD);
+        setvisibleModalStartCrossword(false);
+        formStartCrossword.resetFields();
+      }
+    } catch (error) {}
+  };
   const exitGamePlay = () => {
-    setActivityType(null);
+    saveResultPractice(new Date().getTime());
+  };
+
+  const saveResultPractice = async (
+    endTime,
+    totalAnswerCorrect,
+    totalQuestion
+  ) => {
+    try {
+      let dataSetup = "";
+      switch (activityType) {
+        case ACTIVITY_TYPE.HANGMAN:
+          dataSetup = JSON.stringify(listWordHangman);
+          break;
+        case ACTIVITY_TYPE.MATRIX_WORD:
+          dataSetup = dataCrossword.dataSetup;
+          break;
+      }
+      const res = await http.post(`api/activity/saveResultPractice`, {
+        activityType: activityType,
+        dataSetup: dataSetup,
+        endTime: endTime,
+        level: levelSelected,
+        startTime: startTimePractice,
+        studentId: props.currentUser.userId,
+        totalAnswerCorrect: totalAnswerCorrect,
+        totalQuestion: totalQuestion,
+      });
+      if (res) {
+        console.log("Saved", res);
+        NotificationSuccess(
+          "Hoàn thành",
+          "Kết quả luyện tập của bạn đã được lưu vào lịch sử học tập"
+        );
+        setActivityType(null);
+      }
+    } catch (error) {
+      console.log(error);
+      setActivityType(null);
+    }
   };
   return (
     <div>
@@ -144,7 +202,7 @@ export const PracticeActivity = (props) => {
           >
             Thoát
           </Button>
-          <CrosswordGameplay deadline={deadline} />
+          <CrosswordGameplay data={JSON.parse(dataCrossword.dataSetup)} />
         </>
       )}
 
@@ -155,7 +213,7 @@ export const PracticeActivity = (props) => {
         onCancel={() => {
           setVisibleLevelHangman(false);
           form.resetFields();
-          setLevelhangmanSelected("EASY");
+          setLevelSelected("EASY");
         }}
         onOk={() => {
           form.validateFields().then((values) => {
@@ -164,7 +222,7 @@ export const PracticeActivity = (props) => {
             getListWordForHangman(10, values.level);
             setVisibleLevelHangman(false);
             form.resetFields();
-            // setLevelhangmanSelected("EASY");
+            // setLevelSelected("EASY");
           });
         }}
         okText="Xác nhận"
@@ -176,7 +234,7 @@ export const PracticeActivity = (props) => {
             <LevelDropdown
               style={{ width: "100%" }}
               onChange={(value) => {
-                setLevelhangmanSelected(value);
+                setLevelSelected(value);
               }}
             />
           </Form.Item>
@@ -225,7 +283,9 @@ export const PracticeActivity = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  currentUser: state.auth.user,
+});
 
 const mapDispatchToProps = {};
 
