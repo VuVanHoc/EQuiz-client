@@ -17,10 +17,16 @@ import { Hangman } from "./Setup/Hangman";
 import { CrosswordGamePlay } from "./Play/Crossword";
 import { HangmanGamePlay } from "./Play/Hangman";
 import { CrosswordSetup } from "./Setup/CrosswordSetup";
+import { NotificationSuccess } from "../../common/components/Notification";
+import { useHistory } from "react-router";
+import http from "../../api";
+
 export const CreateActivity = (props) => {
   const { Title, Text } = Typography;
   const { Step } = Steps;
+  const { currentUser } = props;
 
+  const history = useHistory();
   // TEMPLATE ENTITY HERE
   const templateWordmap = {
     text1: "",
@@ -41,47 +47,8 @@ export const CreateActivity = (props) => {
   const [listWordHangman, setListwordHangman] = useState([templateHangman]);
   const [form] = Form.useForm();
   const [dataCrossword, setDataCrossword] = useState({
-    across: {
-      1: {
-        clue: "Dark purplish-red",
-        answer: "CRIMSON",
-        row: 0,
-        col: 2,
-      },
-      2: {
-        clue: "Use a spade to make a hole",
-        answer: "DIG",
-        row: 2,
-        col: 0,
-      },
-      3: {
-        clue: "Painting, sculpture or drawing",
-        answer: "ARTART",
-        row: 2,
-        col: 8,
-      },
-    },
-    down: {
-      1: {
-        clue:
-          "A mosquito bite can be very _____ and make you want to scartch it",
-        answer: "ITCHY",
-        row: 0,
-        col: 4,
-      },
-      2: {
-        clue: "Dots",
-        answer: "SPOTS",
-        row: 0,
-        col: 6,
-      },
-      3: {
-        clue: "Small blocks of this are good to make a drink cold",
-        answer: "ICE",
-        row: 2,
-        col: 1,
-      },
-    },
+    across: {},
+    down: {},
   });
   // FUNCTION, ACTION HERE
   const changeStep = (current) => {
@@ -137,7 +104,6 @@ export const CreateActivity = (props) => {
 
   // ACTION FOR CROSSWORD
   const deleteQuestion = (type, key) => {
-    console.log(type, key);
     let newData = { ...dataCrossword };
     let lastKey = null;
     let totalQuestionByType = Object.keys(dataCrossword[type]).length;
@@ -179,7 +145,6 @@ export const CreateActivity = (props) => {
     setDataCrossword(newData);
   };
   const updateDataQuestionCrossword = (type, index, key, value) => {
-    console.log(type, index, key, value);
     let newData = { ...dataCrossword };
     if ((key === "row" || key === "col") && value < 0) {
       return;
@@ -192,6 +157,31 @@ export const CreateActivity = (props) => {
     }
     newData[type][index][key] = value;
     setDataCrossword(newData);
+  };
+
+  const saveActivity = async () => {
+    try {
+      let dataSetup = "";
+      switch (basicInfoActivity.type) {
+        case ACTIVITY_TYPE.FLASH_CARD:
+        case ACTIVITY_TYPE.HANGMAN:
+        case ACTIVITY_TYPE.MATRIX_WORD:
+          dataSetup = JSON.stringify(dataCrossword);
+          break;
+      }
+      const res = await http.post(`api/activity/create`, {
+        ...basicInfoActivity,
+        dataSetup,
+        responsibleId: currentUser.userId,
+      });
+      if (res) {
+        console.log(res);
+        NotificationSuccess("", "Tạo hoạt động thành công");
+        history.push(`${ROUTES_PATH.ACTIVITIES}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   // RENDER FUNCTION HERE
   const renderByStep = (step) => {
@@ -214,7 +204,7 @@ export const CreateActivity = (props) => {
               >
                 <Input placeholder="Tên hoạt động" />
               </Form.Item>
-              {/* <Form.Item
+              <Form.Item
                 colon={false}
                 required
                 name="level"
@@ -227,7 +217,7 @@ export const CreateActivity = (props) => {
                 ]}
               >
                 <LevelDropdown />
-              </Form.Item> */}
+              </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
@@ -248,7 +238,7 @@ export const CreateActivity = (props) => {
           </Row>
           <Row>
             <Col span={24}>
-              <Form.Item name="description" label="Mô tả">
+              <Form.Item name="description" label="Mô tả/ Ghi chú">
                 <TextArea rows={5} />
               </Form.Item>
             </Col>
@@ -270,8 +260,8 @@ export const CreateActivity = (props) => {
       return (
         <div>
           <Title level={4}>{`${basicInfoActivity.name} - ${
-            MAP_ACTIVITY_NAME[basicInfoActivity.type]
-          }`}</Title>
+            MAP_LEVEL_LABEL[basicInfoActivity.level]
+          }-  ${MAP_ACTIVITY_NAME[basicInfoActivity.type]}`}</Title>
           {basicInfoActivity.type === ACTIVITY_TYPE.FLASH_CARD && (
             <Flashcard
               listWordFlashcard={listWordFlashcard}
@@ -305,7 +295,11 @@ export const CreateActivity = (props) => {
             MAP_ACTIVITY_NAME[basicInfoActivity.type]
           }`}</Title>
           {basicInfoActivity.type === ACTIVITY_TYPE.MATRIX_WORD && (
-            <CrosswordGamePlay isSetupMode={true} data={dataCrossword} />
+            <CrosswordGamePlay
+              isSetupMode={true}
+              data={dataCrossword}
+              saveActivity={saveActivity}
+            />
           )}
           {basicInfoActivity.type === ACTIVITY_TYPE.HANGMAN && (
             <HangmanGamePlay listWord={listWordHangman} isSetupMode={true} />

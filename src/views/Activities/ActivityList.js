@@ -1,44 +1,52 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Typography, Table, Tag, Input, Popconfirm } from "antd";
-import { ROLE_TYPE } from "../../common/Constants";
+import { Typography, Table, Tag, Input, Popconfirm, Tooltip } from "antd";
+import { ROLE_TYPE, ACTIVITY_TYPE } from "../../common/Constants";
 import "./Activity.scss";
 import Avatar from "antd/lib/avatar/avatar";
-import { DeleteTwoTone } from "@ant-design/icons";
+import {
+  DeleteTwoTone,
+  ShareAltOutlined,
+  EditOutlined,
+  TeamOutlined,
+  GlobalOutlined,
+} from "@ant-design/icons";
+import http from "../../api";
+import moment from "moment";
 
 export const ActivityList = (props) => {
-  const { isFetching, currentUser } = props;
+  const { currentUser } = props;
   const { Text, Title } = Typography;
 
-  const data = [
-    {
-      name: "Từ vựng chủ đề Học tập",
-      type: "HANGMAN",
-      createdDate: "04/04/2021 17:00 PM",
-    },
-    {
-      name: "Từ vựng chủ đề Trái cây",
-      type: "HANGMAN",
-      createdDate: "04/04/2021 17:00 PM",
-      level: "MEDIUM",
-    },
-    {
-      name: "Từ vựng chủ đề Môi trường",
-      type: "HANGMAN",
-      createdDate: "04/04/2021 17:00 PM",
-    },
-    {
-      name: "Đoán ô chữ",
-      type: "MATRIX_WORD",
-      createdDate: "04/04/2021 17:00 PM",
-      level: "HARD",
-    },
-    {
-      name: "Từ vựng chủ đề Học tập",
-      type: "HANGMAN",
-      createdDate: "04/04/2021 17:00 PM",
-    },
-  ];
+  const [isFetching, setIsFetching] = useState(false);
+  const [dataListActivity, setDataListActivity] = useState({});
+
+  useEffect(() => {
+    requestFetchList({ pageIndex: 0, pageSize: 5 });
+  }, []);
+
+  const requestFetchList = async (data) => {
+    try {
+      setIsFetching(true);
+      const res = await http.post(
+        `api/activity/getList?pageIndex=${data.pageIndex}&pageSize=${data.pageSize}`,
+        {
+          orderBy: "createdDate",
+          orderByAsc: data.orderByAsc,
+          userId: currentUser.userId,
+          responsibleId: currentUser.userId,
+          searchText: data.searchText || "",
+        }
+      );
+      if (res) {
+        setIsFetching(false);
+        setDataListActivity(res);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsFetching(false);
+    }
+  };
 
   const columns = [
     {
@@ -49,7 +57,15 @@ export const ActivityList = (props) => {
       title: "Loại hoạt động",
       dataIndex: "type",
       render: (value) => {
-        return <p>{value === "HANGMAN" ? `Ballon` : "Crossword"}</p>;
+        switch (value) {
+          case ACTIVITY_TYPE.HANGMAN:
+            return <p>Balloon</p>;
+          case ACTIVITY_TYPE.MATRIX_WORD:
+            return <p>Crossword</p>;
+          case ACTIVITY_TYPE.FLASH_CARD:
+            return <p>Thẻ Flashcard</p>;
+        }
+        return <p></p>;
       },
     },
     {
@@ -71,6 +87,9 @@ export const ActivityList = (props) => {
     {
       title: "Ngày tạo",
       dataIndex: "createdDate",
+      render: (createdDate) => {
+        return moment(createdDate).format("DD/MM/YYYY HH:mm A");
+      },
     },
     {
       align: "center",
@@ -80,27 +99,54 @@ export const ActivityList = (props) => {
       },
     },
     {
+      title: "",
+      dataIndex: "sharePublic",
+      width: 20,
+      render: (sharePublic) => {
+        return sharePublic ? (
+          <Tooltip title="Bạn đã chia sẻ hoạt động này cho cộng đồng">
+            <GlobalOutlined style={{ fontSize: 16, color: "green" }} />
+          </Tooltip>
+        ) : (
+          <></>
+        );
+      },
+    },
+    {
+      align: "center",
       title: "Hành động",
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (
-          <>
-            <Popconfirm
-              width={150}
-              title="Bạn chắc chắn muốn xoá lớp học này không?"
-              okText="Xoá"
-              cancelText="Huỷ"
-              placement="topRight"
-              // onConfirm={(e) => deleteClassroom(e, record.id)}
-              // onCancel={(e) => e.stopPropagation()}
-            >
-              <DeleteTwoTone
-                style={{ fontSize: 16 }}
-                twoToneColor="red"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </Popconfirm>
-          </>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
+            <Tooltip title="Chỉnh sửa">
+              <EditOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+            </Tooltip>
+            <Tooltip title="Chia sẻ">
+              <ShareAltOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+            </Tooltip>
+            <Tooltip title="Gửi cho lớp">
+              <TeamOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+            </Tooltip>
+
+            <Tooltip title="Xoá">
+              <Popconfirm
+                width={150}
+                title="Bạn chắc chắn muốn xoá lớp học này không?"
+                okText="Xoá"
+                cancelText="Huỷ"
+                placement="topRight"
+                // onConfirm={(e) => deleteClassroom(e, record.id)}
+                // onCancel={(e) => e.stopPropagation()}
+              >
+                <DeleteTwoTone
+                  style={{ fontSize: 16 }}
+                  twoToneColor="red"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Popconfirm>
+            </Tooltip>
+          </div>
         );
       },
     },
@@ -127,8 +173,18 @@ export const ActivityList = (props) => {
         // rowKey={(record) => record.id}
         loading={isFetching}
         columns={columns}
-        dataSource={data}
-        pagination={{ pageSize: 5 }}
+        dataSource={dataListActivity.data}
+        pagination={{
+          total: dataListActivity.total || 0,
+          onChange: (pageIndex, pageSize) => {
+            requestFetchList({ pageIndex, pageSize });
+          },
+          pageSize: 5,
+          showTotal: (total) => {
+            return `Tổng số: ${total} kết quả`;
+          },
+        }}
+        rowKey={(record) => record.id}
       />
     </div>
   );
