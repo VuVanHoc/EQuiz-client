@@ -110,15 +110,18 @@ export const PracticeActivity = (props) => {
   ) => {
     try {
       let dataSetup = "";
+      let activityId = null;
       switch (activityType) {
         case ACTIVITY_TYPE.HANGMAN:
           dataSetup = JSON.stringify(listWordHangman);
           break;
         case ACTIVITY_TYPE.MATRIX_WORD:
           dataSetup = dataCrossword.dataSetup;
+          activityId = dataCrossword.id;
           break;
       }
       const res = await http.post(`api/activity/saveResultPractice`, {
+        activityId: activityId,
         activityType: activityType,
         dataSetup: dataSetup,
         endTime: endTime,

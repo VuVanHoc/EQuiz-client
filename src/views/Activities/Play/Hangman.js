@@ -144,6 +144,8 @@ export const HangmanGamePlay = (props) => {
     setCurrentWordIndex(0);
     initWorkingData(0);
     setCharacters(defaultListCharacter);
+    setCurrentWord(listWord[0]);
+    setWordInfo(null);
     setTotalHint([
       { used: false },
       { used: false },

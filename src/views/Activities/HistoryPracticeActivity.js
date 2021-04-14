@@ -122,7 +122,7 @@ export const HistoryPracticeActivity = (props) => {
             return `Tổng số: ${total} kết quả`;
           },
         }}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record.historyActivityId}
       />
     </div>
   );
