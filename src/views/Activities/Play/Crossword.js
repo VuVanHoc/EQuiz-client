@@ -21,6 +21,10 @@ export const CrosswordGamePlay = (props) => {
   }, [isSetupMode]);
 
   const [visibleDeleteAnswered, setVisibleDeleteAnswered] = useState(false);
+  const [
+    visibleModalConfirmFinishExam,
+    setvisibleModalConfirmFinishExam,
+  ] = useState(false);
 
   const finishPractice = () => {
     const totalQuestion =
@@ -121,7 +125,7 @@ export const CrosswordGamePlay = (props) => {
               <Button
                 style={{ width: 100 }}
                 type="primary"
-                onClick={finishPractice}
+                onClick={() => setvisibleModalConfirmFinishExam(true)}
               >
                 Nộp bài
               </Button>
@@ -141,6 +145,16 @@ export const CrosswordGamePlay = (props) => {
         }}
       >
         Bạn có chắc chắn muốn xoá tất cả các đáp án đã nhập không?
+      </Modal>
+      <Modal
+        visible={visibleModalConfirmFinishExam}
+        title="Xác nhận"
+        cancelText="Huỷ"
+        onCancel={() => setvisibleModalConfirmFinishExam(false)}
+        okText="Xác nhận"
+        onOk={finishPractice}
+      >
+        Bạn có chắc chắn muốn nộp bài cho hoạt động này không?
       </Modal>
     </div>
   );

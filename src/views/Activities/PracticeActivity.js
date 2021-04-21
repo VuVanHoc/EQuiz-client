@@ -28,7 +28,7 @@ export const PracticeActivity = (props) => {
     new Date().getTime()
   );
 
-  const [historyMode, setHistoryMode] = useState(false);
+  // const [historyMode, setHistoryMode] = useState(false);
 
   const [form] = Form.useForm();
   const [formStartCrossword] = Form.useForm();
@@ -94,6 +94,7 @@ export const PracticeActivity = (props) => {
       if (res) {
         setDataCrossword(res);
         setActivityType(ACTIVITY_TYPE.MATRIX_WORD);
+        setStartTimePractice(new Date().getTime());
         setvisibleModalStartCrossword(false);
         formStartCrossword.resetFields();
       }
@@ -222,6 +223,7 @@ export const PracticeActivity = (props) => {
           form.validateFields().then((values) => {
             console.log(values);
             setActivityType(ACTIVITY_TYPE.HANGMAN);
+            setStartTimePractice(new Date().getTime());
             getListWordForHangman(10, values.level);
             setVisibleLevelHangman(false);
             form.resetFields();
