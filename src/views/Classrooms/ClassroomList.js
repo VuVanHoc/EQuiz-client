@@ -16,13 +16,14 @@ import {
   Row,
   Col,
   Empty,
+  Tooltip,
 } from "antd";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import {
   MailFilled,
   PhoneFilled,
   DeleteTwoTone,
-  EditTwoTone,
+  EditOutlined,
   Icon,
 } from "@ant-design/icons";
 import { requestFetchList } from "../../store/classroom/actions";
@@ -97,23 +98,33 @@ export const ClassroomList = (props) => {
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (
-          <>
-            <Popconfirm
-              width={150}
-              title="Bạn chắc chắn muốn xoá lớp học này không?"
-              okText="Xoá"
-              cancelText="Huỷ"
-              placement="topRight"
-              onConfirm={(e) => deleteClassroom(e, record.id)}
-              onCancel={(e) => e.stopPropagation()}
-            >
-              <DeleteTwoTone
-                style={{ fontSize: 16 }}
-                twoToneColor="red"
-                onClick={(e) => e.stopPropagation()}
+          <div>
+            <Tooltip title="Chỉnh sửa">
+              <EditOutlined
+                style={{ fontSize: 16, color: "#008DF2", marginRight: 10 }}
+                onClick={() => {
+                  history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`);
+                }}
               />
-            </Popconfirm>
-          </>
+            </Tooltip>
+            <Tooltip title="Xoá">
+              <Popconfirm
+                width={150}
+                title="Bạn chắc chắn muốn xoá lớp học này không?"
+                okText="Xoá"
+                cancelText="Huỷ"
+                placement="topRight"
+                onConfirm={(e) => deleteClassroom(e, record.id)}
+                onCancel={(e) => e.stopPropagation()}
+              >
+                <DeleteTwoTone
+                  style={{ fontSize: 16 }}
+                  twoToneColor="red"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Popconfirm>
+            </Tooltip>
+          </div>
         );
       },
     },
@@ -177,12 +188,12 @@ export const ClassroomList = (props) => {
           // rowSelection={{ ...rowSelection }}
           // scroll={{ x: 1500 }}
           loading={isFetching}
-          onRow={(record, index) => {
-            return {
-              onClick: () =>
-                history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
-            };
-          }}
+          // onRow={(record, index) => {
+          //   return {
+          //     onClick: () =>
+          //       history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
+          //   };
+          // }}
           columns={columns}
           pagination={{
             total: totalResult,

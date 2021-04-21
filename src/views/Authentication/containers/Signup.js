@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Input, Typography, Form, Checkbox, Dropdown } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "../Authentication.scss";
 import OnlineLearning from "../../../assets/online_learning.svg";
 import {
@@ -10,26 +10,54 @@ import {
   LockOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import { ROUTES_PATH, ROLE_TYPE } from "../../../common/Constants";
+import {
+  ROUTES_PATH,
+  ROLE_TYPE,
+  ERROR_MESSAGE,
+} from "../../../common/Constants";
 import LogoEquiz from "../../../assets/logoEQuiz.png";
 import RoleDropdown from "../../../common/components/RoleDropdown";
 import { requestSignup } from "../../../store/auth/actions";
+import http from "../../../api";
+import {
+  NotificationError,
+  NotificationSuccess,
+} from "../../../common/components/Notification";
+import md5 from "md5";
 
 export const SignUp = (props) => {
   const { Text, Title } = Typography;
 
-  const onFinishSignup = (values) => {
-    props.requestSignup({
-      confirmPassword: values.confirmPassword,
-      fullname: values.fullname,
-      password: values.password,
-      userType: values.userType,
-      username: values.email,
-    });
+  const [isSubmitting, setSubmiting] = useState(false);
+
+  const history = useHistory();
+
+  const onFinishSignup = async (values) => {
+    setSubmiting(true);
+    try {
+      const res = await http.post(`/api/auth/signup`, {
+        confirmPassword: md5(values.confirmPassword),
+        fullname: values.fullname,
+        password: md5(values.password),
+        userType: values.userType,
+        username: values.email,
+      });
+      if (res) {
+        NotificationSuccess(
+          `Đăng ký thành công`,
+          `Vui lòng xác nhận email để kích hoạt tài khoản`
+        );
+        setSubmiting(false);
+      }
+    } catch (error) {
+      setSubmiting(false);
+      switch (error) {
+        case ERROR_MESSAGE.USERNAME_EXISTED:
+          return NotificationError("Lỗi", "Email đã tồn tại");
+      }
+    }
   };
-  const test = () => {
-    props.history.push("/login");
-  };
+
   return (
     <div className="bg">
       <div className="container">
@@ -138,7 +166,7 @@ export const SignUp = (props) => {
             </Form.Item>
             <Form.Item style={{ marginTop: "24px" }}>
               <Button
-                loading={props.isSubmitting}
+                loading={isSubmitting}
                 type="primary"
                 htmlType="submit"
                 className="btnSubmit"
