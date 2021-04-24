@@ -9,7 +9,7 @@ import CrosswordGameplay from "./Play/Crossword";
 import http from "../../api";
 import { LogoutOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import LevelDropdown from "../../common/components/LevelDropdown";
-import SubjectDropdown from "./SubjectDropdown";
+import SubjectDropdown from "../../common/components/SubjectDropdown";
 import { NotificationSuccess } from "../../common/components/Notification";
 
 export const PracticeActivity = (props) => {
@@ -277,7 +277,7 @@ export const PracticeActivity = (props) => {
               },
             ]}
           >
-            <SubjectDropdown style={{ width: "100%" }} />
+            <SubjectDropdown style={{ width: "100%" }} hasOptionRandom />
           </Form.Item>
           <Form.Item label="Mức độ" name="level">
             <LevelDropdown style={{ width: "100%" }} onChange={(value) => {}} />

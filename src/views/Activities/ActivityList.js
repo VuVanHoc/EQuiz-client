@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { Typography, Table, Tag, Input, Popconfirm, Tooltip } from "antd";
+import {
+  Typography,
+  Table,
+  Tag,
+  Input,
+  Popconfirm,
+  Tooltip,
+  Form,
+  Modal,
+  Radio,
+  DatePicker,
+} from "antd";
 import { ROLE_TYPE, ACTIVITY_TYPE } from "../../common/Constants";
 import "./Activity.scss";
 import Avatar from "antd/lib/avatar/avatar";
@@ -13,6 +24,8 @@ import {
 } from "@ant-design/icons";
 import http from "../../api";
 import moment from "moment";
+import { NotificationSuccess } from "../../common/components/Notification";
+import ClassroomDropdown from "../../common/components/ClassroomDropdown";
 
 export const ActivityList = (props) => {
   const { currentUser } = props;
@@ -20,6 +33,11 @@ export const ActivityList = (props) => {
 
   const [isFetching, setIsFetching] = useState(false);
   const [dataListActivity, setDataListActivity] = useState({});
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareActivityForm] = Form.useForm();
+  const [assignActivityForm] = Form.useForm();
+  const [shareType, setShareType] = useState("PERSONAL");
+  const [showAssignModal, setShowAssignModal] = useState(false);
 
   useEffect(() => {
     requestFetchList({ pageIndex: 0, pageSize: 5 });
@@ -48,6 +66,56 @@ export const ActivityList = (props) => {
     }
   };
 
+  const shareActivity = (activity) => {
+    shareActivityForm.setFieldsValue({
+      activityName: activity.name,
+      activityId: activity.id,
+      type: "PERSONAL",
+    });
+    setShowShareModal(true);
+  };
+
+  const onChangeShareType = (e) => {
+    setShareType(e.target.value);
+  };
+  const submitModalShareActivivty = () => {
+    shareActivityForm.validateFields().then(async (values) => {
+      try {
+        const res = await http.post(`api/activity/share`, { ...values });
+        if (res) {
+          NotificationSuccess("Thành công");
+          setShowShareModal(false);
+          shareActivityForm.resetFields();
+          setShareType("PERSONAL");
+        }
+      } catch (error) {}
+    });
+  };
+  const assignForClassroom = (activity) => {
+    assignActivityForm.setFieldsValue({
+      activityName: activity.name,
+      activityId: activity.id,
+    });
+    setShowAssignModal(true);
+  };
+  const submitModalAssignActivity = () => {
+    assignActivityForm.validateFields().then(async (values) => {
+      let body = {
+        ...values,
+        endTime: values.endTime
+          ? new Date(values.endTime.format("YYYY-MM-DD HH:mm")).getTime()
+          : null,
+      };
+      try {
+        const res = await http.post(`api/activity/assignForClassroom`, body);
+        if (res) {
+          NotificationSuccess("Thành công");
+          setShowAssignModal(false);
+          assignActivityForm.resetFields();
+        }
+      } catch (error) {}
+    });
+  };
   const columns = [
     {
       title: "Tên hoạt động",
@@ -123,16 +191,22 @@ export const ActivityList = (props) => {
               <EditOutlined style={{ fontSize: 16, color: "#008DF2" }} />
             </Tooltip>
             <Tooltip title="Chia sẻ">
-              <ShareAltOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+              <ShareAltOutlined
+                style={{ fontSize: 16, color: "#008DF2" }}
+                onClick={() => shareActivity(record)}
+              />
             </Tooltip>
             <Tooltip title="Gửi cho lớp">
-              <TeamOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+              <TeamOutlined
+                style={{ fontSize: 16, color: "#008DF2" }}
+                onClick={() => assignForClassroom(record)}
+              />
             </Tooltip>
 
             <Tooltip title="Xoá">
               <Popconfirm
                 width={150}
-                title="Bạn chắc chắn muốn xoá lớp học này không?"
+                title="Bạn chắc chắn muốn xoá hoạt động này không?"
                 okText="Xoá"
                 cancelText="Huỷ"
                 placement="topRight"
@@ -186,6 +260,131 @@ export const ActivityList = (props) => {
         }}
         rowKey={(record) => record.id}
       />
+
+      <Modal
+        title="Chia sẻ hoạt động"
+        okText="Chia sẻ"
+        cancelText="Huỷ"
+        visible={showShareModal}
+        onOk={submitModalShareActivivty}
+        onCancel={() => {
+          setShowShareModal(false);
+          shareActivityForm.resetFields();
+          setShareType("PERSONAL");
+        }}
+      >
+        <Form form={shareActivityForm}>
+          <Form.Item
+            hidden
+            name="activityId"
+            colon={false}
+            labelCol={{ span: 6 }}
+            label="ID"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="activityName"
+            colon={false}
+            labelCol={{ span: 6 }}
+            label="Tên hoạt động"
+          >
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item
+            name="type"
+            label="Đối tượng"
+            colon={false}
+            labelCol={{ span: 6 }}
+            labelAlign="left"
+            onChange={onChangeShareType}
+          >
+            <Radio.Group>
+              <Radio value="PERSONAL">Cá nhân</Radio>
+              <Radio value="PUBLIC">Tất cả mọi người</Radio>
+            </Radio.Group>
+          </Form.Item>
+          {shareType === "PERSONAL" && (
+            <Form.Item
+              name="email"
+              label="Email"
+              colon={false}
+              labelCol={{ span: 6 }}
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn cần nhập email của người nhận",
+                },
+                {
+                  type: "email",
+                  message: "Email không đúng định dạng",
+                },
+              ]}
+            >
+              <Input type="email" />
+            </Form.Item>
+          )}
+        </Form>
+      </Modal>
+      <Modal
+        title="Giao bài tập cho lớp"
+        okText="Hoàn thành"
+        cancelText="Huỷ"
+        visible={showAssignModal}
+        onOk={submitModalAssignActivity}
+        onCancel={() => {
+          assignActivityForm.resetFields();
+          setShowAssignModal(false);
+        }}
+      >
+        <Form form={assignActivityForm}>
+          <Form.Item
+            hidden
+            name="activityId"
+            colon={false}
+            labelCol={{ span: 6 }}
+            label="ID"
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="activityName"
+            colon={false}
+            labelCol={{ span: 6 }}
+            label="Tên hoạt động"
+          >
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item
+            colon={false}
+            labelCol={{ span: 6 }}
+            label="Lớp học"
+            name="classroomIds"
+            rules={[
+              {
+                required: true,
+                message: "Bạn chưa lựa chọn lớp học nào",
+              },
+            ]}
+          >
+            <ClassroomDropdown mode="multiple" />
+          </Form.Item>
+          <Form.Item
+            colon={false}
+            labelCol={{ span: 6 }}
+            label="Thời hạn kết thúc"
+            name="endTime"
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              format="DD/MM/YYYY HH:mm"
+              showTime
+              showSecond={false}
+              placeholder="Lựa chọn ngày"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

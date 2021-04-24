@@ -11,7 +11,9 @@ import theme7 from "../../../assets/Hangman/theme-balloon7.png";
 import HangmanAudio from "../../../assets/audio/wonOpp.mp3";
 import WrongAnswer from "../../../assets/audio/WrongAnswer.wav";
 import CorrectAnswer from "../../../assets/audio/CorrectAnswer.wav";
-import WinnerSoundClapping from "../../../assets/audio/WinnerSoundClapping.wav";
+import TadaSound from "../../../assets/audio/TadaSound.mp3";
+import BalloonPopping from "../../../assets/audio/BalloonPopping.mp3";
+
 import ShowHint from "../../../assets/audio/SelectHint.wav";
 
 import axios from "axios";
@@ -28,9 +30,9 @@ export const HangmanGamePlay = (props) => {
   const audio = new Audio(HangmanAudio);
   const WrongAnswerAudio = new Audio(WrongAnswer);
   const CorrectAnswerAudio = new Audio(CorrectAnswer);
-  const WinnerSoundAudio = new Audio(WinnerSoundClapping);
+  const WinnerSoundAudio = new Audio(TadaSound);
   const ShowHintAudio = new Audio(ShowHint);
-
+  const BalloonPoppingAudio = new Audio(BalloonPopping);
   const defaultListCharacter = {
     A: false,
     B: false,
@@ -120,6 +122,8 @@ export const HangmanGamePlay = (props) => {
     } else {
       if (numberWrong >= 5) {
         WrongAnswerAudio.play();
+      } else {
+        BalloonPoppingAudio.play();
       }
       setNumberWrong(numberWrong + 1);
     }
@@ -368,6 +372,7 @@ export const HangmanGamePlay = (props) => {
         )}
       </div>
       <Modal
+        key="summary"
         title="Tổng kết"
         okText="Đóng"
         cancelText="Huỷ"
@@ -394,6 +399,7 @@ export const HangmanGamePlay = (props) => {
         })}
       </Modal>
       <Modal
+        key="guide"
         title="Hướng dẫn chơi Ballon"
         okText="Bắt đầu ngay"
         visible={visibleGuide}
@@ -413,12 +419,12 @@ export const HangmanGamePlay = (props) => {
         }}
       >
         <Carousel dotPosition="top" ref={refCarosel}>
-          <img alt="guide1" src={guide1} />
-          <img alt="guide2" src={guide2} />
-          <img alt="guide3" src={guide3} />
-          <img alt="guide4" src={guide4} />
-          <img alt="guide5" src={guide5} />
-          <img alt="guide6" src={guide6} />
+          <img key="guide1" alt="guide1" src={guide1} />
+          <img key="guide2" alt="guide2" src={guide2} />
+          <img key="guide3" alt="guide3" src={guide3} />
+          <img key="guide4" alt="guide4" src={guide4} />
+          <img key="guide5" alt="guide5" src={guide5} />
+          <img key="guide6" alt="guide6" src={guide6} />
         </Carousel>
       </Modal>
     </>

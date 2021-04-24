@@ -24,7 +24,7 @@ import {
   PhoneFilled,
   DeleteTwoTone,
   EditOutlined,
-  Icon,
+  UserOutlined,
 } from "@ant-design/icons";
 import { requestFetchList } from "../../store/classroom/actions";
 import http from "../../api";
@@ -87,7 +87,15 @@ export const ClassroomList = (props) => {
               </div>
             }
           >
-            <Avatar>{record.responsibleAvatar}</Avatar>
+            {record.responsibleAvatar ? (
+              <Avatar>{record.responsibleAvatar}</Avatar>
+            ) : (
+              <Avatar
+                icon={<UserOutlined />}
+                src={currentUser?.avatar}
+                style={{ backgroundColor: currentUser?.defaultColor }}
+              ></Avatar>
+            )}
           </Popover>
         );
       },

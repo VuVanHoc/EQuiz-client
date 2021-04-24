@@ -115,7 +115,7 @@ export const HistoryPracticeActivity = (props) => {
         pagination={{
           total: historyPractice.total || 0,
           onChange: (pageIndex, pageSize) => {
-            fetchHistoryPractice({ pageIndex, pageSize });
+            fetchHistoryPractice({ pageIndex: pageIndex - 1, pageSize });
           },
           pageSize: 5,
           showTotal: (total) => {

@@ -10,6 +10,8 @@ import {
 import "./Activity.scss";
 import { ActivityTypeDropdown } from "../../common/components/ActivityTypeDropdown";
 import LevelDropdown from "../../common/components/LevelDropdown";
+import SubjectDropdown from "../../common/components/SubjectDropdown";
+
 import TextArea from "antd/lib/input/TextArea";
 import { SettingOutlined } from "@ant-design/icons";
 import { Flashcard } from "./Setup/Flashcard";
@@ -233,6 +235,20 @@ export const CreateActivity = (props) => {
                 ]}
               >
                 <ActivityTypeDropdown />
+              </Form.Item>
+              <Form.Item
+                colon={false}
+                required
+                name="subject"
+                label="Chủ đề"
+                rules={[
+                  {
+                    required: true,
+                    message: "Bạn chưa lựa chọn chủ đề cho hoạt động",
+                  },
+                ]}
+              >
+                <SubjectDropdown />
               </Form.Item>
             </Col>
           </Row>

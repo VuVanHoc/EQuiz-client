@@ -27,6 +27,7 @@ import {
 import StudentList from "./StudentList";
 import http from "../../api";
 import { NotificationSuccess } from "../../common/components/Notification";
+import ClassroomActivity from "./ClassroomActivity";
 
 export const ClassroomDetail = (props) => {
   const { currentUser } = props;
@@ -308,7 +309,9 @@ export const ClassroomDetail = (props) => {
           </Row>
         </TabPane>
 
-        <TabPane tab="Bài tập trên lớp"></TabPane>
+        <TabPane tab="Bài tập trên lớp">
+          <ClassroomActivity classroomInfo={classroomInfo} />
+        </TabPane>
         <TabPane tab="Danh sách học sinh" key="studentList">
           <StudentList />
         </TabPane>
