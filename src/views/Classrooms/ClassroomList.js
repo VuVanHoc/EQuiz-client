@@ -25,6 +25,7 @@ import {
   DeleteTwoTone,
   EditOutlined,
   UserOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { requestFetchList } from "../../store/classroom/actions";
 import http from "../../api";
@@ -102,13 +103,13 @@ export const ClassroomList = (props) => {
     },
     {
       align: "center",
-      title: "Thao tác",
+      title: "Hành động",
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (
           <div>
-            <Tooltip title="Chỉnh sửa">
-              <EditOutlined
+            <Tooltip title="Xem chi tiết">
+              <FileTextOutlined
                 style={{ fontSize: 16, color: "#008DF2", marginRight: 10 }}
                 onClick={() => {
                   history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`);

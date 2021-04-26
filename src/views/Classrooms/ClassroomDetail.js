@@ -312,9 +312,9 @@ export const ClassroomDetail = (props) => {
         <TabPane tab="Bài tập trên lớp">
           <ClassroomActivity classroomInfo={classroomInfo} />
         </TabPane>
-        <TabPane tab="Danh sách học sinh" key="studentList">
+        {/* <TabPane tab="Danh sách học sinh" key="studentList">
           <StudentList />
-        </TabPane>
+        </TabPane> */}
         {/* <TabPane tab="Lịch sử học tập" key="3">
           <HistoryClassroom />
         </TabPane> */}

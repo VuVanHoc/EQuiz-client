@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button, Modal, Card, Typography, Row, Col, Form, Tooltip } from "antd";
-import { ACTIVITY_TYPE, ROUTES_PATH } from "../../common/Constants";
+import {
+  ACTIVITY_TYPE,
+  ERROR_MESSAGE,
+  ROUTES_PATH,
+} from "../../common/Constants";
 import hangmanPicture from "../../assets/introduce-hangman.png";
 import crosswordPicture from "../../assets/introduce-crossword.png";
 import HangmanGamePlay from "./Play/Hangman";
@@ -10,7 +14,10 @@ import http from "../../api";
 import { LogoutOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import LevelDropdown from "../../common/components/LevelDropdown";
 import SubjectDropdown from "../../common/components/SubjectDropdown";
-import { NotificationSuccess } from "../../common/components/Notification";
+import {
+  NotificationError,
+  NotificationSuccess,
+} from "../../common/components/Notification";
 
 export const PracticeActivity = (props) => {
   const styleBtnExit = {
@@ -89,7 +96,14 @@ export const PracticeActivity = (props) => {
   const getRandomCrossword = async (level, subject) => {
     try {
       const res = await http.get(
-        `api/activity/getRandomCrossword?level=${level}&subject=${subject}`
+        `api/activity/getRandomCrossword`,
+        {
+          params: {
+            level,
+            subject,
+          },
+        }
+        // ?level=${level}&subject=${subject}`
       );
       if (res) {
         setDataCrossword(res);
@@ -98,7 +112,15 @@ export const PracticeActivity = (props) => {
         setvisibleModalStartCrossword(false);
         formStartCrossword.resetFields();
       }
-    } catch (error) {}
+    } catch (error) {
+      switch (error) {
+        case ERROR_MESSAGE.NOT_FOUND:
+          return NotificationError(
+            "Bộ dữ liệu hiện chưa có",
+            "Vui lòng thử lại sau"
+          );
+      }
+    }
   };
   const exitGamePlay = () => {
     saveResultPractice(new Date().getTime());
@@ -176,7 +198,7 @@ export const PracticeActivity = (props) => {
               >
                 <Card.Meta
                   title={`Crossword`}
-                  description={`Giải mã những ô chữ với chủ đề Toán và Tiếng Anh siêu thú vị.`}
+                  description={`Giải mã những ô chữ với rất nhiều chủ đề vô cùng thú vị.`}
                 ></Card.Meta>
               </Card>
             </Col>

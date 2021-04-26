@@ -21,6 +21,7 @@ import {
   EditOutlined,
   TeamOutlined,
   GlobalOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import http from "../../api";
 import moment from "moment";
@@ -181,14 +182,15 @@ export const ActivityList = (props) => {
       },
     },
     {
+      width: 150,
       align: "center",
       title: "Hành động",
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (
           <div style={{ display: "flex", justifyContent: "space-around" }}>
-            <Tooltip title="Chỉnh sửa">
-              <EditOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+            <Tooltip title="Xem chi tiết">
+              <FileTextOutlined style={{ fontSize: 16, color: "#008DF2" }} />
             </Tooltip>
             <Tooltip title="Chia sẻ">
               <ShareAltOutlined
