@@ -6,6 +6,7 @@ export const NotificationSuccess = (
   duration,
   placement = "topRight"
 ) => {
+  notification.destroy();
   notification.success({
     message: title,
     description: message,
@@ -20,6 +21,7 @@ export const NotificationError = (
   duration,
   placement = "topRight"
 ) => {
+  notification.destroy();
   notification.error({
     message: title,
     description: message,
@@ -34,6 +36,7 @@ export const NotificationWarning = (
   duration,
   placement = "topRight"
 ) => {
+  notification.destroy();
   notification.warning({
     message: title,
     description: message,

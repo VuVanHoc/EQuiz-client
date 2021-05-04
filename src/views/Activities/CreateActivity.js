@@ -20,13 +20,14 @@ import { CrosswordGamePlay } from "./Play/Crossword";
 import { HangmanGamePlay } from "./Play/Hangman";
 import { CrosswordSetup } from "./Setup/CrosswordSetup";
 import { NotificationSuccess } from "../../common/components/Notification";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
 import http from "../../api";
 
 export const CreateActivity = (props) => {
   const { Title, Text } = Typography;
   const { Step } = Steps;
   const { currentUser } = props;
+  const { id } = useParams();
 
   const history = useHistory();
   // TEMPLATE ENTITY HERE
@@ -52,6 +53,44 @@ export const CreateActivity = (props) => {
     across: {},
     down: {},
   });
+
+  useEffect(() => {
+    if (id) {
+      getActivityDetail(id);
+    }
+    return () => {
+      form.resetFields();
+    };
+  }, [id]);
+
+  const getActivityDetail = async (id) => {
+    try {
+      const res = await http.get(`api/activity/detail/${id}`);
+      if (res) {
+        console.log("Acitivity Detail:", res);
+        form.setFieldsValue({
+          name: res.name,
+          type: res.type,
+          level: res.level,
+          description: res.description,
+          subject: res.subject,
+          id: res.id,
+        });
+        switch (res.type) {
+          case ACTIVITY_TYPE.MATRIX_WORD:
+            setDataCrossword(JSON.parse(res.dataSetup));
+            break;
+          case ACTIVITY_TYPE.HANGMAN:
+            setListwordHangman(JSON.parse(res.dataSetup));
+            break;
+          case ACTIVITY_TYPE.FLASH_CARD:
+            break;
+        }
+      }
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
   // FUNCTION, ACTION HERE
   const changeStep = (current) => {
     if (currentStep === 0) {
@@ -166,20 +205,34 @@ export const CreateActivity = (props) => {
       let dataSetup = "";
       switch (basicInfoActivity.type) {
         case ACTIVITY_TYPE.FLASH_CARD:
+          break;
         case ACTIVITY_TYPE.HANGMAN:
+          dataSetup = JSON.stringify(listWordHangman);
+          break;
         case ACTIVITY_TYPE.MATRIX_WORD:
           dataSetup = JSON.stringify(dataCrossword);
           break;
       }
-      const res = await http.post(`api/activity/create`, {
-        ...basicInfoActivity,
-        dataSetup,
-        responsibleId: currentUser.userId,
-      });
-      if (res) {
-        console.log(res);
-        NotificationSuccess("", "Tạo hoạt động thành công");
-        history.push(`${ROUTES_PATH.ACTIVITIES}`);
+      if (id) {
+        const res = await http.post(`api/activity/update`, {
+          ...basicInfoActivity,
+          dataSetup,
+          responsibleId: currentUser.userId,
+        });
+        if (res) {
+          NotificationSuccess("", "Cập nhật hoạt động thành công");
+          // history.push(`${ROUTES_PATH.ACTIVITIES}`);
+        }
+      } else {
+        const res = await http.post(`api/activity/create`, {
+          ...basicInfoActivity,
+          dataSetup,
+          responsibleId: currentUser.userId,
+        });
+        if (res) {
+          NotificationSuccess("", "Tạo hoạt động thành công");
+          history.push(`${ROUTES_PATH.ACTIVITIES}`);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -192,6 +245,18 @@ export const CreateActivity = (props) => {
         <Form form={form} layout="vertical">
           <Row gutter={12}>
             <Col span={12}>
+              {id && (
+                <Form.Item
+                  hidden
+                  colon={false}
+                  required
+                  name="id"
+                  label="Mã hoạt động"
+                >
+                  <Input placeholder="Tên hoạt động" />
+                </Form.Item>
+              )}
+
               <Form.Item
                 colon={false}
                 required
@@ -327,7 +392,7 @@ export const CreateActivity = (props) => {
   return (
     <div>
       <Title level={3} className="header-table">
-        Tạo hoạt động
+        {id ? "Cập nhật hoạt động" : "Tạo hoạt động"}
       </Title>
       <Row gutter={[12]}>
         <Col span={4}>

@@ -12,7 +12,7 @@ import {
   Radio,
   DatePicker,
 } from "antd";
-import { ROLE_TYPE, ACTIVITY_TYPE } from "../../common/Constants";
+import { ROLE_TYPE, ACTIVITY_TYPE, ROUTES_PATH } from "../../common/Constants";
 import "./Activity.scss";
 import Avatar from "antd/lib/avatar/avatar";
 import {
@@ -27,6 +27,7 @@ import http from "../../api";
 import moment from "moment";
 import { NotificationSuccess } from "../../common/components/Notification";
 import ClassroomDropdown from "../../common/components/ClassroomDropdown";
+import { useHistory } from "react-router";
 
 export const ActivityList = (props) => {
   const { currentUser } = props;
@@ -39,7 +40,7 @@ export const ActivityList = (props) => {
   const [assignActivityForm] = Form.useForm();
   const [shareType, setShareType] = useState("PERSONAL");
   const [showAssignModal, setShowAssignModal] = useState(false);
-
+  const history = useHistory();
   useEffect(() => {
     requestFetchList({ pageIndex: 0, pageSize: 5 });
   }, []);
@@ -190,7 +191,12 @@ export const ActivityList = (props) => {
         return (
           <div style={{ display: "flex", justifyContent: "space-around" }}>
             <Tooltip title="Xem chi tiết">
-              <FileTextOutlined style={{ fontSize: 16, color: "#008DF2" }} />
+              <FileTextOutlined
+                style={{ fontSize: 16, color: "#008DF2" }}
+                onClick={() =>
+                  history.push(`${ROUTES_PATH.ACTIVITIES}/${record.id}`)
+                }
+              />
             </Tooltip>
             <Tooltip title="Chia sẻ">
               <ShareAltOutlined

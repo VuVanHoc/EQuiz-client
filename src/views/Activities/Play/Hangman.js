@@ -8,7 +8,6 @@ import theme4 from "../../../assets/Hangman/theme-balloon4.png";
 import theme5 from "../../../assets/Hangman/theme-balloon5.png";
 import theme6 from "../../../assets/Hangman/theme-balloon6.png";
 import theme7 from "../../../assets/Hangman/theme-balloon7.png";
-import HangmanAudio from "../../../assets/audio/wonOpp.mp3";
 import WrongAnswer from "../../../assets/audio/WrongAnswer.wav";
 import CorrectAnswer from "../../../assets/audio/CorrectAnswer.wav";
 import TadaSound from "../../../assets/audio/TadaSound.mp3";
@@ -27,7 +26,6 @@ import guide5 from "../../../assets/Hangman/guide5.png";
 import guide6 from "../../../assets/Hangman/guide6.png";
 
 export const HangmanGamePlay = (props) => {
-  const audio = new Audio(HangmanAudio);
   const WrongAnswerAudio = new Audio(WrongAnswer);
   const CorrectAnswerAudio = new Audio(CorrectAnswer);
   const WinnerSoundAudio = new Audio(TadaSound);
@@ -67,9 +65,7 @@ export const HangmanGamePlay = (props) => {
   const [winner, setWinner] = useState(false);
   useEffect(() => {
     initWorkingData(0);
-    // audio.play();
     return () => {
-      audio.pause();
       setWordInfo(null);
     };
   }, [listWord]);

@@ -2,13 +2,18 @@ import React, { useRef, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import Crossword, { ThemeProvider } from "@jaredreisinger/react-crossword";
 import { Col, Row, Button, Switch, Statistic, Tooltip, Typography } from "antd";
-import { IconMap } from "antd/lib/result";
 import Modal from "antd/lib/modal/Modal";
-
+import TadaSound from "../../../assets/audio/TadaSound.mp3";
+import WrongAnswer from "../../../assets/audio/WrongAnswer.wav";
+// import winnerImg from "../../../assets/winner.png";
 export const CrosswordGamePlay = (props) => {
+  const WrongAnswerAudio = new Audio(WrongAnswer);
+  const WinnerSoundAudio = new Audio(TadaSound);
+
   const { isSetupMode, data, saveActivity } = props;
 
   const [totalCorrect, setTotalCorrect] = useState(0);
+  const [correct, setCorrect] = useState(false);
 
   const refCrossword = useRef(null);
   useEffect(() => {
@@ -25,6 +30,7 @@ export const CrosswordGamePlay = (props) => {
     visibleModalConfirmFinishExam,
     setvisibleModalConfirmFinishExam,
   ] = useState(false);
+  const [visisbleModalSummary, setVisibleModalSummary] = useState(false);
 
   const finishPractice = () => {
     const totalQuestion =
@@ -32,11 +38,17 @@ export const CrosswordGamePlay = (props) => {
 
     console.log("Total question:", totalQuestion, totalCorrect);
 
+    setvisibleModalConfirmFinishExam(false);
     if (refCrossword.current.isCrosswordCorrect()) {
       console.log("Correct");
+      WinnerSoundAudio.play();
+      setCorrect(true);
     } else {
       console.log("Not correct");
+      WrongAnswerAudio.play();
+      setCorrect(false);
     }
+    setVisibleModalSummary(true);
   };
   const onCorrect = (direction, number, answer) => {
     // setTotalCorrect(totalCorrect + 1);
@@ -155,6 +167,38 @@ export const CrosswordGamePlay = (props) => {
         onOk={finishPractice}
       >
         Bạn có chắc chắn muốn nộp bài cho hoạt động này không?
+      </Modal>
+      <Modal
+        visible={visisbleModalSummary}
+        title="Kết quả"
+        footer={[
+          <Button
+            type="primary"
+            onClick={() => {
+              setVisibleModalSummary(false);
+            }}
+          >
+            Đóng
+          </Button>,
+        ]}
+      >
+        {correct ? (
+          <div>
+            <p>
+              Chúc mừng
+              <br />
+              Bạn đã trả lời đúng tất cả các ô chữ!
+            </p>
+          </div>
+        ) : (
+          <div>
+            <p>
+              Rất tiếc
+              <br />
+              Bạn chưa giải đúng các ô chữ!
+            </p>
+          </div>
+        )}
       </Modal>
     </div>
   );

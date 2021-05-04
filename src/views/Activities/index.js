@@ -31,7 +31,7 @@ export const Activities = (props) => {
       <Route
         exact
         path={`${ROUTES_PATH.ACTIVITIES}/:id`}
-        component={ActivityDetail}
+        component={CreateActivity}
       />
     </Switch>
   );
