@@ -18,6 +18,13 @@ export function authReducer(
         isLogin: true,
       };
     }
+    case AUTHENTICATION_ACTIONS.UPDATE_USER_INFO_SUCCESS: {
+      return {
+        ...state,
+        user: { ...action.data.userDTO },
+        isLogin: true,
+      };
+    }
     case AUTHENTICATION_ACTIONS.REQUEST_LOGOUT: {
       return { ...state, token: null, user: {}, isLogin: false };
     }

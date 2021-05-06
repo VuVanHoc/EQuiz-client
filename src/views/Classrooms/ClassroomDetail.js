@@ -26,7 +26,10 @@ import {
 } from "@ant-design/icons";
 import StudentList from "./StudentList";
 import http from "../../api";
-import { NotificationSuccess } from "../../common/components/Notification";
+import {
+  NotificationSuccess,
+  NotificationWarning,
+} from "../../common/components/Notification";
 import ClassroomActivity from "./ClassroomActivity";
 
 export const ClassroomDetail = (props) => {
@@ -291,11 +294,29 @@ export const ClassroomDetail = (props) => {
               <div className="d-flex">
                 <Title level={5}>Lịch sử học trực tuyến</Title>
                 {currentUser.userType === ROLE_TYPE.TEACHER ? (
-                  <Button icon={<PlayCircleOutlined />} type="primary">
+                  <Button
+                    icon={<PlayCircleOutlined />}
+                    type="primary"
+                    onClick={() =>
+                      NotificationWarning(
+                        "Tính năng đang được phát triển",
+                        "Vui lòng thử lại sau!"
+                      )
+                    }
+                  >
                     Tạo phòng
                   </Button>
                 ) : (
-                  <Button icon={<PlayCircleOutlined />} type="primary">
+                  <Button
+                    icon={<PlayCircleOutlined />}
+                    type="primary"
+                    onClick={() =>
+                      NotificationWarning(
+                        "Tính năng đang được phát triển",
+                        "Vui lòng thử lại sau!"
+                      )
+                    }
+                  >
                     Tham gia phiên học
                   </Button>
                 )}

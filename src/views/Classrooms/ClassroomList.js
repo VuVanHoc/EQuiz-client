@@ -88,15 +88,11 @@ export const ClassroomList = (props) => {
               </div>
             }
           >
-            {record.responsibleAvatar ? (
-              <Avatar>{record.responsibleAvatar}</Avatar>
-            ) : (
-              <Avatar
-                icon={<UserOutlined />}
-                src={currentUser?.avatar}
-                style={{ backgroundColor: currentUser?.defaultColor }}
-              ></Avatar>
-            )}
+            <Avatar
+              icon={<UserOutlined />}
+              src={record.responsibleAvatar || currentUser?.avatar}
+              style={{ backgroundColor: currentUser?.defaultColor }}
+            ></Avatar>
           </Popover>
         );
       },
@@ -238,7 +234,7 @@ export const ClassroomList = (props) => {
                       title={classroom.name}
                       description={`Mã lớp học: ${classroom.code}`}
                       avatar={
-                        <Avatar src="https://picsum.photos/64/64" size={64} />
+                        <Avatar src={classroom.responsibleAvatar} size={64} />
                       }
                     ></Card.Meta>
                   </Card>
