@@ -75,13 +75,14 @@ export const ClassroomList = (props) => {
               <div style={{ display: "block" }}>
                 {record.responsibleEmail && (
                   <a href={`mailto:${record.responsibleEmail}`} target="_blank">
-                    <MailFilled />
+                    <MailFilled style={{ marginRight: 10 }} />
                     {record.responsibleEmail}
                   </a>
                 )}
+                <br />
                 {record.responsiblePhone && (
                   <a href={`tel:${record.responsiblePhone}`} target="_blank">
-                    <PhoneFilled />
+                    <PhoneFilled style={{ marginRight: 10 }} />
                     {record.responsiblePhone}
                   </a>
                 )}

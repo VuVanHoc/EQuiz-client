@@ -21,21 +21,25 @@ import {
   LockOutlined,
 } from "@ant-design/icons";
 import "./Profile.scss";
-import { ROLE_TYPE } from "../../common/Constants";
+import { ERROR_MESSAGE } from "../../common/Constants";
 import RoleDropdown from "../../common/components/RoleDropdown";
 import UploadAvatarModal from "../../common/components/modals/UploadAvatarModal";
 import http from "../../api";
 import moment from "moment";
 import { updateUserInfoSuccess } from "../../store/auth/actions";
 import { NotificationSuccess } from "../../common/components/Notification";
+import md5 from "md5";
 
 export const Profile = (props) => {
   const { Text, Title } = Typography;
   const { currentUser, updateUserInfoSuccess } = props;
 
   const [userInfoForm] = Form.useForm();
+  const [updatePWForm] = Form.useForm();
+
   const [visibleUploadModal, setVisibleUploadModal] = useState(false);
   const [submittingUserInfo, setSubmittingUserInfo] = useState(false);
+  const [submitingChangePw, setSubmittingChangePw] = useState(false);
 
   useEffect(() => {
     if (currentUser.userId) {
@@ -82,6 +86,37 @@ export const Profile = (props) => {
       } catch (e) {
         setSubmittingUserInfo(false);
         console.log(e);
+      }
+    });
+  };
+
+  const submitUpdatePassword = () => {
+    updatePWForm.validateFields().then(async (values) => {
+      try {
+        setSubmittingChangePw(true);
+        console.log(values);
+        const res = await http.post(`api/user/changePassword`, {
+          oldPassword: md5(values.oldPassword),
+          newPassword: md5(values.newPassword),
+          confirmNewPassword: md5(values.confirmNewPassword),
+          userId: currentUser.userId,
+        });
+        if (res) {
+          NotificationSuccess("Thành công", "Thay đổi mật khẩu thành công");
+          setSubmittingChangePw(false);
+          updatePWForm.resetFields();
+        }
+      } catch (error) {
+        setSubmittingChangePw(false);
+        switch (error) {
+          case ERROR_MESSAGE.USER_NOT_FOUND:
+            return NotificationError("Lỗi", "Tài khoản không tồn tại");
+          case ERROR_MESSAGE.OLD_PASSWORD_NOT_CORRECT:
+            updatePWForm.setFields([
+              { name: "oldPassword", errors: ["Mật khẩu hiện tại không đúng"] },
+            ]);
+            break;
+        }
       }
     });
   };
@@ -147,9 +182,12 @@ export const Profile = (props) => {
                     <Col span={12}>
                       <Form.Item label="Ngày sinh" name="birthday">
                         <DatePicker
+                          disabledDate={(current) => {
+                            return current && current > moment().endOf("day");
+                          }}
                           style={{ width: "100%" }}
                           format="DD/MM/YYYY"
-                          placeholder="Ngày sinh"
+                          placeholder="DD/MM/YYYY"
                         />
                       </Form.Item>
                     </Col>
@@ -189,27 +227,71 @@ export const Profile = (props) => {
             }
             size="small"
           >
-            <Form layout="vertical">
+            <Form layout="vertical" form={updatePWForm}>
               <Row gutter={12}>
                 <Col span={12}>
-                  <Form.Item label="Mật khẩu hiện tại" name="password">
+                  <Form.Item
+                    label="Mật khẩu hiện tại"
+                    name="oldPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Bạn chưa nhập mật khẩu hiện tại",
+                      },
+                    ]}
+                  >
                     <Input.Password />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={12}>
                 <Col span={12}>
-                  <Form.Item label="Mật khẩu mới" name="newPassword">
+                  <Form.Item
+                    label="Mật khẩu mới"
+                    name="newPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Bạn chưa nhập mật khẩu mới",
+                      },
+                    ]}
+                  >
                     <Input.Password />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Xác nhận mật khẩu mới" name="cfNewPassword">
+                  <Form.Item
+                    label="Xác nhận mật khẩu mới"
+                    name="confirmNewPassword"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Bạn chưa xác nhận mật khẩu mới",
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (
+                            !value ||
+                            getFieldValue("newPassword") === value
+                          ) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject("Xác nhận mật khẩu chưa đúng");
+                        },
+                      }),
+                    ]}
+                  >
                     <Input.Password />
                   </Form.Item>
                 </Col>
               </Row>
-              <Button type="primary">Cập nhật</Button>
+              <Button
+                type="primary"
+                onClick={submitUpdatePassword}
+                loading={submitingChangePw}
+              >
+                Cập nhật
+              </Button>
             </Form>
           </Card>
           <Card
