@@ -78,11 +78,11 @@ export const HangmanGamePlay = (props) => {
     console.log("aaaa:", a);
     setArrayCharacterOfWord(a);
     setCurrentWord(listWord[index]);
-    if (!listWord[index]?.valueFromWordAPI) {
-      getDataFromWordsAPI(listWord[index]?.word);
-    } else {
-      setWordInfo(JSON.parse(listWord[index]?.valueFromWordAPI));
-    }
+    // if (!listWord[index]?.valueFromWordAPI) {
+    //   getDataFromWordsAPI(listWord[index]?.word);
+    // } else {
+    //   setWordInfo(JSON.parse(listWord[index]?.valueFromWordAPI));
+    // }
   };
   const arrayImg = [theme1, theme2, theme3, theme4, theme5, theme6, theme7];
 
@@ -170,7 +170,7 @@ export const HangmanGamePlay = (props) => {
         );
         if (res) {
           setWordInfo(res.data);
-          saveDataFromWordAPI(word, res.data);
+          // saveDataFromWordAPI(word, res.data);
         }
       }
     } catch (error) {
@@ -355,14 +355,26 @@ export const HangmanGamePlay = (props) => {
                 alignItems: "flex-start",
               }}
             >
-              <Typography.Title level={5}>
-                {wordInfo?.word || currentWord?.word}
+              <Typography.Title level={3}>
+                {currentWord?.word}
                 <SoundOutlined style={{ marginLeft: 10 }} />
               </Typography.Title>
-              <Typography.Text>
-                {wordInfo?.pronunciation?.all &&
-                  `/${wordInfo?.pronunciation?.all}/`}
-              </Typography.Text>
+              <Typography.Text>{currentWord?.pronunciation}</Typography.Text>
+              {currentWord?.detail?.map((detail, index) => {
+                return (
+                  <div key={index}>
+                    <b style={{ color: "#008df2" }}>* {detail.type}</b>
+                    {detail?.meaning?.map((meaning, subIndex) => {
+                      return (
+                        <div key={subIndex}>
+                          <p style={{ margin: 0 }}>{meaning.meaning}</p>
+                          {meaning.example && <p>Ví dụ: {meaning.example}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
@@ -400,8 +412,11 @@ export const HangmanGamePlay = (props) => {
         okText="Bắt đầu ngay"
         visible={visibleGuide}
         footer={[
-          <Button onClick={() => refCarosel.current.next()}>Tiếp theo</Button>,
+          <Button onClick={() => refCarosel.current.next()} key={1}>
+            Tiếp theo
+          </Button>,
           <Button
+            key={2}
             onClick={() => {
               setvisibleGuide(false);
             }}

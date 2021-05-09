@@ -62,8 +62,7 @@ export const PracticeActivity = (props) => {
         setListwordHangman(
           res.map((word) => {
             return {
-              word: word.value,
-              valueFromWordAPI: word.valueFromWordAPI,
+              ...word,
             };
           })
         );
