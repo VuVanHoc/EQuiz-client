@@ -2,8 +2,8 @@ import axios from "axios";
 import { NotificationError } from "../common/components/Notification";
 import { requestLogout } from "../store/auth/actions";
 const http = axios.create({
-  // baseURL: "http://18.139.84.167:8890",
-  baseURL: "http://localhost:8890",
+  baseURL: "https://equiz-backend.herokuapp.com/",
+  // baseURL: "http://localhost:8890",
   timeout: 60000,
 });
 export const interceptors = (store) => {

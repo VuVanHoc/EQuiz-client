@@ -10,3 +10,14 @@
   vertical-align: middle;
   margin-left: 4px;
 }
+.item-avatar {
+  display: flex !important;
+  justify-content: center !important;
+  cursor: pointer;
+  :hover {
+    outline: 2px dashed #008df2;
+  }
+}
+.item-avatar-focus {
+  outline: 2px solid #008df2;
+}

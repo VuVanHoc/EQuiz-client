@@ -1,5 +1,5 @@
 import { Button, Row, Typography, Col, Modal, Carousel } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import theme1 from "../../../assets/Hangman/theme-balloon1.png";
 import theme2 from "../../../assets/Hangman/theme-balloon2.png";
@@ -8,10 +8,11 @@ import theme4 from "../../../assets/Hangman/theme-balloon4.png";
 import theme5 from "../../../assets/Hangman/theme-balloon5.png";
 import theme6 from "../../../assets/Hangman/theme-balloon6.png";
 import theme7 from "../../../assets/Hangman/theme-balloon7.png";
-import HangmanAudio from "../../../assets/audio/wonOpp.mp3";
 import WrongAnswer from "../../../assets/audio/WrongAnswer.wav";
 import CorrectAnswer from "../../../assets/audio/CorrectAnswer.wav";
-import WinnerSoundClapping from "../../../assets/audio/WinnerSoundClapping.wav";
+import TadaSound from "../../../assets/audio/TadaSound.mp3";
+import BalloonPopping from "../../../assets/audio/BalloonPopping.mp3";
+
 import ShowHint from "../../../assets/audio/SelectHint.wav";
 
 import axios from "axios";
@@ -25,12 +26,11 @@ import guide5 from "../../../assets/Hangman/guide5.png";
 import guide6 from "../../../assets/Hangman/guide6.png";
 
 export const HangmanGamePlay = (props) => {
-  const audio = new Audio(HangmanAudio);
   const WrongAnswerAudio = new Audio(WrongAnswer);
   const CorrectAnswerAudio = new Audio(CorrectAnswer);
-  const WinnerSoundAudio = new Audio(WinnerSoundClapping);
+  const WinnerSoundAudio = new Audio(TadaSound);
   const ShowHintAudio = new Audio(ShowHint);
-
+  const BalloonPoppingAudio = new Audio(BalloonPopping);
   const defaultListCharacter = {
     A: false,
     B: false,
@@ -61,13 +61,11 @@ export const HangmanGamePlay = (props) => {
   };
   const { listWord } = props;
   const [characters, setCharacters] = useState(defaultListCharacter);
-
+  const refCarosel = useRef(null);
   const [winner, setWinner] = useState(false);
   useEffect(() => {
     initWorkingData(0);
-    // audio.play();
     return () => {
-      audio.pause();
       setWordInfo(null);
     };
   }, [listWord]);
@@ -80,11 +78,11 @@ export const HangmanGamePlay = (props) => {
     console.log("aaaa:", a);
     setArrayCharacterOfWord(a);
     setCurrentWord(listWord[index]);
-    if (!listWord[index]?.valueFromWordAPI) {
-      getDataFromWordsAPI(listWord[index]?.word);
-    } else {
-      setWordInfo(JSON.parse(listWord[index]?.valueFromWordAPI));
-    }
+    // if (!listWord[index]?.valueFromWordAPI) {
+    //   getDataFromWordsAPI(listWord[index]?.word);
+    // } else {
+    //   setWordInfo(JSON.parse(listWord[index]?.valueFromWordAPI));
+    // }
   };
   const arrayImg = [theme1, theme2, theme3, theme4, theme5, theme6, theme7];
 
@@ -120,6 +118,8 @@ export const HangmanGamePlay = (props) => {
     } else {
       if (numberWrong >= 5) {
         WrongAnswerAudio.play();
+      } else {
+        BalloonPoppingAudio.play();
       }
       setNumberWrong(numberWrong + 1);
     }
@@ -144,6 +144,8 @@ export const HangmanGamePlay = (props) => {
     setCurrentWordIndex(0);
     initWorkingData(0);
     setCharacters(defaultListCharacter);
+    setCurrentWord(listWord[0]);
+    setWordInfo(null);
     setTotalHint([
       { used: false },
       { used: false },
@@ -168,7 +170,7 @@ export const HangmanGamePlay = (props) => {
         );
         if (res) {
           setWordInfo(res.data);
-          saveDataFromWordAPI(word, res.data);
+          // saveDataFromWordAPI(word, res.data);
         }
       }
     } catch (error) {
@@ -353,21 +355,35 @@ export const HangmanGamePlay = (props) => {
                 alignItems: "flex-start",
               }}
             >
-              <Typography.Title level={5}>
-                {wordInfo?.word || currentWord?.word}
+              <Typography.Title level={3}>
+                {currentWord?.word}
                 <SoundOutlined style={{ marginLeft: 10 }} />
               </Typography.Title>
-              <Typography.Text>
-                {wordInfo?.pronunciation?.all &&
-                  `/${wordInfo?.pronunciation?.all}/`}
-              </Typography.Text>
+              <Typography.Text>{currentWord?.pronunciation}</Typography.Text>
+              {currentWord?.detail?.map((detail, index) => {
+                return (
+                  <div key={index}>
+                    <b style={{ color: "#008df2" }}>* {detail.type}</b>
+                    {detail?.meaning?.map((meaning, subIndex) => {
+                      return (
+                        <div key={subIndex}>
+                          <p style={{ margin: 0 }}>{meaning.meaning}</p>
+                          {meaning.example && <p>Ví dụ: {meaning.example}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
       </div>
       <Modal
+        key="summary"
         title="Tổng kết"
         okText="Đóng"
+        cancelText="Huỷ"
         onOk={() => setVisibleSumary(false)}
         onCancel={() => setVisibleSumary(false)}
         visible={visibleSumary}
@@ -382,7 +398,8 @@ export const HangmanGamePlay = (props) => {
               <Col span={8}>{e?.word}</Col>
               <Col span={5}>
                 {e?.pronunciation ||
-                  JSON.parse(e?.valueFromWordAPI)?.pronunciation?.all}
+                  (e?.valueFromWordAPI &&
+                    JSON.parse(e?.valueFromWordAPI)?.pronunciation?.all)}
               </Col>
               <Col span={9}>{e?.meaning}</Col>
             </Row>
@@ -390,11 +407,16 @@ export const HangmanGamePlay = (props) => {
         })}
       </Modal>
       <Modal
+        key="guide"
         title="Hướng dẫn chơi Ballon"
         okText="Bắt đầu ngay"
         visible={visibleGuide}
         footer={[
+          <Button onClick={() => refCarosel.current.next()} key={1}>
+            Tiếp theo
+          </Button>,
           <Button
+            key={2}
             onClick={() => {
               setvisibleGuide(false);
             }}
@@ -407,13 +429,13 @@ export const HangmanGamePlay = (props) => {
           setvisibleGuide(false);
         }}
       >
-        <Carousel dotPosition="top">
-          <img alt="guide1" src={guide1} />
-          <img alt="guide2" src={guide2} />
-          <img alt="guide3" src={guide3} />
-          <img alt="guide4" src={guide4} />
-          <img alt="guide5" src={guide5} />
-          <img alt="guide6" src={guide6} />
+        <Carousel dotPosition="top" ref={refCarosel}>
+          <img key="guide1" alt="guide1" src={guide1} />
+          <img key="guide2" alt="guide2" src={guide2} />
+          <img key="guide3" alt="guide3" src={guide3} />
+          <img key="guide4" alt="guide4" src={guide4} />
+          <img key="guide5" alt="guide5" src={guide5} />
+          <img key="guide6" alt="guide6" src={guide6} />
         </Carousel>
       </Modal>
     </>

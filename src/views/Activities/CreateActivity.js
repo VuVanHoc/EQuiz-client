@@ -10,16 +10,26 @@ import {
 import "./Activity.scss";
 import { ActivityTypeDropdown } from "../../common/components/ActivityTypeDropdown";
 import LevelDropdown from "../../common/components/LevelDropdown";
+import SubjectDropdown from "../../common/components/SubjectDropdown";
+
 import TextArea from "antd/lib/input/TextArea";
 import { SettingOutlined } from "@ant-design/icons";
 import { Flashcard } from "./Setup/Flashcard";
 import { Hangman } from "./Setup/Hangman";
 import { CrosswordGamePlay } from "./Play/Crossword";
 import { HangmanGamePlay } from "./Play/Hangman";
+import { CrosswordSetup } from "./Setup/CrosswordSetup";
+import { NotificationSuccess } from "../../common/components/Notification";
+import { useHistory, useParams } from "react-router";
+import http from "../../api";
+
 export const CreateActivity = (props) => {
   const { Title, Text } = Typography;
   const { Step } = Steps;
+  const { currentUser } = props;
+  const { id } = useParams();
 
+  const history = useHistory();
   // TEMPLATE ENTITY HERE
   const templateWordmap = {
     text1: "",
@@ -39,7 +49,48 @@ export const CreateActivity = (props) => {
   ]);
   const [listWordHangman, setListwordHangman] = useState([templateHangman]);
   const [form] = Form.useForm();
+  const [dataCrossword, setDataCrossword] = useState({
+    across: {},
+    down: {},
+  });
 
+  useEffect(() => {
+    if (id) {
+      getActivityDetail(id);
+    }
+    return () => {
+      form.resetFields();
+    };
+  }, [id]);
+
+  const getActivityDetail = async (id) => {
+    try {
+      const res = await http.get(`api/activity/detail/${id}`);
+      if (res) {
+        console.log("Acitivity Detail:", res);
+        form.setFieldsValue({
+          name: res.name,
+          type: res.type,
+          level: res.level,
+          description: res.description,
+          subject: res.subject,
+          id: res.id,
+        });
+        switch (res.type) {
+          case ACTIVITY_TYPE.MATRIX_WORD:
+            setDataCrossword(JSON.parse(res.dataSetup));
+            break;
+          case ACTIVITY_TYPE.HANGMAN:
+            setListwordHangman(JSON.parse(res.dataSetup));
+            break;
+          case ACTIVITY_TYPE.FLASH_CARD:
+            break;
+        }
+      }
+    } catch (e) {
+      console.log("Error", e);
+    }
+  };
   // FUNCTION, ACTION HERE
   const changeStep = (current) => {
     if (currentStep === 0) {
@@ -91,6 +142,102 @@ export const CreateActivity = (props) => {
       ...listWordHangman.slice(index + 1, listWordHangman.length),
     ]);
   };
+
+  // ACTION FOR CROSSWORD
+  const deleteQuestion = (type, key) => {
+    let newData = { ...dataCrossword };
+    let lastKey = null;
+    let totalQuestionByType = Object.keys(dataCrossword[type]).length;
+
+    if (key === totalQuestionByType) {
+      delete newData[type][key];
+      setDataCrossword(newData);
+      return;
+    }
+    Object.keys(newData[type]).forEach((k) => {
+      // if(k < key) {
+      //   continue;
+      // }
+      if (k === key) {
+        lastKey = k;
+      }
+      if (k > key) {
+        newData[type][k - 1] = { ...newData[type][k] };
+        lastKey = k;
+      }
+    });
+    delete newData[type][lastKey];
+    setDataCrossword(newData);
+  };
+  const addQuestionCrossword = (type) => {
+    let totalQuestionByType = Object.keys(dataCrossword[type]).length;
+
+    let currentData = { ...dataCrossword[type] };
+    currentData = {
+      ...currentData,
+      [totalQuestionByType + 1]: {
+        clue: "",
+        answer: "",
+        row: 0,
+        col: 0,
+      },
+    };
+    let newData = { ...dataCrossword, [type]: currentData };
+    setDataCrossword(newData);
+  };
+  const updateDataQuestionCrossword = (type, index, key, value) => {
+    let newData = { ...dataCrossword };
+    if ((key === "row" || key === "col") && value < 0) {
+      return;
+    }
+    if (key === "row" || key === "col") {
+    }
+
+    if (key === "answer") {
+      value = value.toUpperCase();
+    }
+    newData[type][index][key] = value;
+    setDataCrossword(newData);
+  };
+
+  const saveActivity = async () => {
+    try {
+      let dataSetup = "";
+      switch (basicInfoActivity.type) {
+        case ACTIVITY_TYPE.FLASH_CARD:
+          break;
+        case ACTIVITY_TYPE.HANGMAN:
+          dataSetup = JSON.stringify(listWordHangman);
+          break;
+        case ACTIVITY_TYPE.MATRIX_WORD:
+          dataSetup = JSON.stringify(dataCrossword);
+          break;
+      }
+      if (id) {
+        const res = await http.post(`api/activity/update`, {
+          ...basicInfoActivity,
+          dataSetup,
+          responsibleId: currentUser.userId,
+        });
+        if (res) {
+          NotificationSuccess("", "Cập nhật hoạt động thành công");
+          // history.push(`${ROUTES_PATH.ACTIVITIES}`);
+        }
+      } else {
+        const res = await http.post(`api/activity/create`, {
+          ...basicInfoActivity,
+          dataSetup,
+          responsibleId: currentUser.userId,
+        });
+        if (res) {
+          NotificationSuccess("", "Tạo hoạt động thành công");
+          history.push(`${ROUTES_PATH.ACTIVITIES}`);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // RENDER FUNCTION HERE
   const renderByStep = (step) => {
     if (step === 0) {
@@ -98,6 +245,18 @@ export const CreateActivity = (props) => {
         <Form form={form} layout="vertical">
           <Row gutter={12}>
             <Col span={12}>
+              {id && (
+                <Form.Item
+                  hidden
+                  colon={false}
+                  required
+                  name="id"
+                  label="Mã hoạt động"
+                >
+                  <Input placeholder="Tên hoạt động" />
+                </Form.Item>
+              )}
+
               <Form.Item
                 colon={false}
                 required
@@ -112,7 +271,7 @@ export const CreateActivity = (props) => {
               >
                 <Input placeholder="Tên hoạt động" />
               </Form.Item>
-              {/* <Form.Item
+              <Form.Item
                 colon={false}
                 required
                 name="level"
@@ -125,7 +284,7 @@ export const CreateActivity = (props) => {
                 ]}
               >
                 <LevelDropdown />
-              </Form.Item> */}
+              </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
@@ -142,11 +301,25 @@ export const CreateActivity = (props) => {
               >
                 <ActivityTypeDropdown />
               </Form.Item>
+              <Form.Item
+                colon={false}
+                required
+                name="subject"
+                label="Chủ đề"
+                rules={[
+                  {
+                    required: true,
+                    message: "Bạn chưa lựa chọn chủ đề cho hoạt động",
+                  },
+                ]}
+              >
+                <SubjectDropdown />
+              </Form.Item>
             </Col>
           </Row>
           <Row>
             <Col span={24}>
-              <Form.Item name="description" label="Mô tả">
+              <Form.Item name="description" label="Mô tả/ Ghi chú">
                 <TextArea rows={5} />
               </Form.Item>
             </Col>
@@ -168,8 +341,8 @@ export const CreateActivity = (props) => {
       return (
         <div>
           <Title level={4}>{`${basicInfoActivity.name} - ${
-            MAP_ACTIVITY_NAME[basicInfoActivity.type]
-          }`}</Title>
+            MAP_LEVEL_LABEL[basicInfoActivity.level]
+          }-  ${MAP_ACTIVITY_NAME[basicInfoActivity.type]}`}</Title>
           {basicInfoActivity.type === ACTIVITY_TYPE.FLASH_CARD && (
             <Flashcard
               listWordFlashcard={listWordFlashcard}
@@ -186,6 +359,14 @@ export const CreateActivity = (props) => {
               updateWord={updateWord}
             />
           )}
+          {basicInfoActivity.type === ACTIVITY_TYPE.MATRIX_WORD && (
+            <CrosswordSetup
+              data={dataCrossword}
+              deleteQuestion={deleteQuestion}
+              addQuestionCrossword={addQuestionCrossword}
+              updateDataQuestionCrossword={updateDataQuestionCrossword}
+            />
+          )}
         </div>
       );
     } else if (step === 2) {
@@ -195,7 +376,11 @@ export const CreateActivity = (props) => {
             MAP_ACTIVITY_NAME[basicInfoActivity.type]
           }`}</Title>
           {basicInfoActivity.type === ACTIVITY_TYPE.MATRIX_WORD && (
-            <CrosswordGamePlay isSetupMode={true} />
+            <CrosswordGamePlay
+              isSetupMode={true}
+              data={dataCrossword}
+              saveActivity={saveActivity}
+            />
           )}
           {basicInfoActivity.type === ACTIVITY_TYPE.HANGMAN && (
             <HangmanGamePlay listWord={listWordHangman} isSetupMode={true} />
@@ -207,10 +392,10 @@ export const CreateActivity = (props) => {
   return (
     <div>
       <Title level={3} className="header-table">
-        Tạo hoạt động
+        {id ? "Cập nhật hoạt động" : "Tạo hoạt động"}
       </Title>
-      <Row>
-        <Col span={8}>
+      <Row gutter={[12]}>
+        <Col span={4}>
           <Steps
             size="default"
             onChange={changeStep}
@@ -232,7 +417,7 @@ export const CreateActivity = (props) => {
           </Steps>
         </Col>
 
-        <Col span={16}>
+        <Col span={20}>
           <div className="right-content">{renderByStep(currentStep)} </div>
         </Col>
       </Row>

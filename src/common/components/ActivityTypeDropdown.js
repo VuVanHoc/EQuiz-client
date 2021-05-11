@@ -5,7 +5,7 @@ import { ACTIVITY_TYPE } from "../Constants";
 export const ActivityTypeDropdown = (props) => {
   const activityType = [
     {
-      text: "Hangman",
+      text: "Đoán từ với Balloon",
       value: ACTIVITY_TYPE.HANGMAN,
     },
     {

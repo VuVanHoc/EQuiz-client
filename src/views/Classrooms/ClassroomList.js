@@ -16,14 +16,16 @@ import {
   Row,
   Col,
   Empty,
+  Tooltip,
 } from "antd";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import {
   MailFilled,
   PhoneFilled,
   DeleteTwoTone,
-  EditTwoTone,
-  Icon,
+  EditOutlined,
+  UserOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { requestFetchList } from "../../store/classroom/actions";
 import http from "../../api";
@@ -61,7 +63,8 @@ export const ClassroomList = (props) => {
       },
     },
     {
-      title: "Người quản lý",
+      align: "center",
+      title: "Quản lý",
       dataIndex: "responsible",
       render: (_, record) => {
         return (
@@ -72,59 +75,78 @@ export const ClassroomList = (props) => {
               <div style={{ display: "block" }}>
                 {record.responsibleEmail && (
                   <a href={`mailto:${record.responsibleEmail}`} target="_blank">
-                    <MailFilled />
+                    <MailFilled style={{ marginRight: 10 }} />
                     {record.responsibleEmail}
                   </a>
                 )}
+                <br />
                 {record.responsiblePhone && (
                   <a href={`tel:${record.responsiblePhone}`} target="_blank">
-                    <PhoneFilled />
+                    <PhoneFilled style={{ marginRight: 10 }} />
                     {record.responsiblePhone}
                   </a>
                 )}
               </div>
             }
           >
-            <Avatar>H</Avatar>
+            <Avatar
+              icon={<UserOutlined />}
+              src={record.responsibleAvatar || currentUser?.avatar}
+              style={{ backgroundColor: currentUser?.defaultColor }}
+            ></Avatar>
           </Popover>
         );
       },
     },
     {
-      title: "Thao tác",
+      align: "center",
+      title: "Hành động",
       render: (_, record) => {
         // return <ActionMenu record={record} />;
         return (
-          <>
-            <EditTwoTone
-              style={{ fontSize: 16, marginRight: 16 }}
-              twoToneColor="#6AC3E8"
-              onClick={(e) => e.stopPropagation()}
-            />
-            <Popconfirm
-              width={150}
-              title="Bạn chắc chắn muốn xoá lớp học này không?"
-              okText="Xoá"
-              cancelText="Huỷ"
-              placement="topRight"
-              onConfirm={deleteClassroom}
-              onCancel={(e) => e.stopPropagation()}
-            >
-              <DeleteTwoTone
-                style={{ fontSize: 16 }}
-                twoToneColor="red"
-                onClick={(e) => e.stopPropagation()}
+          <div>
+            <Tooltip title="Xem chi tiết">
+              <FileTextOutlined
+                style={{ fontSize: 16, color: "#008DF2", marginRight: 10 }}
+                onClick={() => {
+                  history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`);
+                }}
               />
-            </Popconfirm>
-          </>
+            </Tooltip>
+            <Tooltip title="Xoá">
+              <Popconfirm
+                width={150}
+                title="Bạn chắc chắn muốn xoá lớp học này không?"
+                okText="Xoá"
+                cancelText="Huỷ"
+                placement="topRight"
+                onConfirm={(e) => deleteClassroom(e, record.id)}
+                onCancel={(e) => e.stopPropagation()}
+              >
+                <DeleteTwoTone
+                  style={{ fontSize: 16 }}
+                  twoToneColor="red"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Popconfirm>
+            </Tooltip>
+          </div>
         );
       },
     },
   ];
 
   const [listClassroomStudent, setListClassroomStudent] = useState([]);
-  const deleteClassroom = (e, id) => {
+  const deleteClassroom = async (e, id) => {
     e.stopPropagation();
+    try {
+      const res = await http.delete(`api/classroom/delete/${id}`);
+      if (res) {
+        props.requestFetchList({ pageSize: 5 });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onChangePaging = (pageIndex, pageSize) => {
@@ -172,12 +194,12 @@ export const ClassroomList = (props) => {
           // rowSelection={{ ...rowSelection }}
           // scroll={{ x: 1500 }}
           loading={isFetching}
-          onRow={(record, index) => {
-            return {
-              onClick: () =>
-                history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
-            };
-          }}
+          // onRow={(record, index) => {
+          //   return {
+          //     onClick: () =>
+          //       history.push(`${ROUTES_PATH.CLASSROOMS}/${record.id}`),
+          //   };
+          // }}
           columns={columns}
           pagination={{
             total: totalResult,
@@ -213,7 +235,7 @@ export const ClassroomList = (props) => {
                       title={classroom.name}
                       description={`Mã lớp học: ${classroom.code}`}
                       avatar={
-                        <Avatar src="https://picsum.photos/64/64" size={64} />
+                        <Avatar src={classroom.responsibleAvatar} size={64} />
                       }
                     ></Card.Meta>
                   </Card>

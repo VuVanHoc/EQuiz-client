@@ -12,7 +12,7 @@ import {
   BookOutlined,
   AppstoreOutlined,
   CalendarOutlined,
-  FileSearchOutlined,
+  ClockCircleOutlined,
   ImportOutlined,
 } from "@ant-design/icons";
 import CreateMenu from "../../common/components/CreateMenu";
@@ -76,6 +76,12 @@ export const App = (props) => {
       title: "Luyện tập ngay",
       icon: <AppstoreOutlined />,
       path: `${ROUTES_PATH.ACTIVITIES}/practice`,
+    },
+    {
+      key: "history",
+      title: "Lịch sử học tập",
+      icon: <ClockCircleOutlined />,
+      path: `${ROUTES_PATH.ACTIVITIES}/history`,
     },
     // {
     //   key: "calendar",
