@@ -1,22 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Table, Button, Row, Col, Typography, Tag, Input, Tooltip } from "antd";
+import {
+  Table,
+  Button,
+  Row,
+  Col,
+  Typography,
+  Tag,
+  Input,
+  Tooltip,
+  Modal,
+  Form,
+  DatePicker,
+  Popconfirm,
+} from "antd";
 import http from "../../api";
-import { ACTIVITY_TYPE, ROLE_TYPE } from "../../common/Constants";
+import { ACTIVITY_TYPE, ROLE_TYPE, ROUTES_PATH } from "../../common/Constants";
 import moment from "moment";
 import {
   PlayCircleOutlined,
   ClockCircleOutlined,
   FileTextOutlined,
+  AreaChartOutlined,
   DeleteTwoTone,
 } from "@ant-design/icons";
+import { useHistory } from "react-router";
 
 export const ClassroomActivity = (props) => {
   const { classroomInfo, user } = props;
   const { Title, Text } = Typography;
   const [activities, setActivities] = useState([]);
   const [isFetching, setFetching] = useState(false);
+  const [showFormChangeDeadline, setShowFormChangeDeadline] = useState(false);
 
+  const [formChangeDeadline] = Form.useForm();
+
+  const history = useHistory();
   useEffect(() => {
     fetchListActivities({
       pageIndex: 0,
@@ -49,6 +68,56 @@ export const ClassroomActivity = (props) => {
       }
     } catch (error) {
       setFetching(false);
+    }
+  };
+
+  const submitFormChangeDeadline = () => {
+    try {
+      formChangeDeadline.validateFields().then(async (values) => {
+        const res = await http.post(
+          `api/activity/updateDeadlineActivity`,
+          {},
+          {
+            params: {
+              id: values.classroomActivityId,
+              endTime: values.endTime
+                ? new Date(values.endTime.format("YYYY-MM-DD HH:mm")).getTime()
+                : null,
+            },
+          }
+        );
+        if (res) {
+          setShowFormChangeDeadline(false);
+          formChangeDeadline.resetFields();
+          fetchListActivities({
+            pageIndex: 0,
+            pageSize: 5,
+            classroomId: classroomInfo.id,
+          });
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const deleteClassroomActivity = async (e, id) => {
+    e.stopPropagation();
+    try {
+      const res = await http.delete(`api/activity/deleteClassroomActivity`, {
+        params: {
+          id: id,
+        },
+      });
+      if (res) {
+        fetchListActivities({
+          pageIndex: 0,
+          pageSize: 5,
+          classroomId: classroomInfo.id,
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   const columns = [
@@ -123,18 +192,50 @@ export const ClassroomActivity = (props) => {
         if (user.userType === ROLE_TYPE.TEACHER) {
           return (
             <div style={{ display: "flex", justifyContent: "space-around" }}>
+              <Tooltip title="Thống kê kết quả">
+                <AreaChartOutlined
+                  style={{ fontSize: 16, color: "#008DF2", marginRight: 10 }}
+                />
+              </Tooltip>
               <Tooltip title="Chi tiết hoạt động">
                 <FileTextOutlined
                   style={{ fontSize: 16, color: "#008DF2", marginRight: 10 }}
+                  onClick={() => {
+                    history.push(`${ROUTES_PATH.ACTIVITIES}/${record.id}`);
+                  }}
                 />
               </Tooltip>
               <Tooltip title="Thay đổi thời hạn">
                 <ClockCircleOutlined
                   style={{ fontSize: 16, color: "#008DF2", marginRight: 10 }}
+                  onClick={() => {
+                    formChangeDeadline.setFieldsValue({
+                      classroomActivityId: record.classroomActivityId,
+                      activityName: record.name,
+                      endTime: record.endTime ? moment(record.endTime) : null,
+                    });
+                    setShowFormChangeDeadline(true);
+                  }}
                 />
               </Tooltip>
               <Tooltip title="Xoá">
-                <DeleteTwoTone style={{ fontSize: 16 }} twoToneColor="red" />
+                <Popconfirm
+                  width={150}
+                  title="Bạn muốn xoá hoạt động này?"
+                  okText="Xoá"
+                  cancelText="Huỷ"
+                  placement="topRight"
+                  onConfirm={(e) =>
+                    deleteClassroomActivity(e, record.classroomActivityId)
+                  }
+                  onCancel={(e) => e.stopPropagation()}
+                >
+                  <DeleteTwoTone
+                    style={{ fontSize: 16 }}
+                    twoToneColor="red"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </Popconfirm>
               </Tooltip>
             </div>
           );
@@ -182,6 +283,38 @@ export const ClassroomActivity = (props) => {
         }}
         rowKey={(record) => record.classroomActivityId}
       />
+
+      <Modal
+        cancelText="Huỷ"
+        okText="Xác nhận"
+        visible={showFormChangeDeadline}
+        title="Thay đổi thời hạn nộp bài"
+        onCancel={() => {
+          setShowFormChangeDeadline(false);
+        }}
+        onOk={submitFormChangeDeadline}
+      >
+        <Form form={formChangeDeadline}>
+          <Form.Item name="classroomActivityId" label="ID" hidden>
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="activityName" label="Tên hoạt động">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="endTime" label="Thời hạn kết thúc">
+            <DatePicker
+              disabledDate={(current) => {
+                return current && current < moment().endOf("day");
+              }}
+              style={{ width: "100%" }}
+              format="DD/MM/YYYY HH:mm"
+              showTime
+              showSecond={false}
+              placeholder="Lựa chọn thời gian"
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 };
