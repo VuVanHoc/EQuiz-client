@@ -24,7 +24,7 @@ import {
   AreaChartOutlined,
   DeleteTwoTone,
 } from "@ant-design/icons";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
 
 export const ClassroomActivity = (props) => {
   const { classroomInfo, user } = props;
@@ -34,6 +34,7 @@ export const ClassroomActivity = (props) => {
   const [showFormChangeDeadline, setShowFormChangeDeadline] = useState(false);
 
   const [formChangeDeadline] = Form.useForm();
+  const { id } = useParams();
 
   const history = useHistory();
   useEffect(() => {
@@ -246,6 +247,11 @@ export const ClassroomActivity = (props) => {
           <Button
             icon={<PlayCircleOutlined />}
             style={{ backgroundColor: "orange", color: "#fff" }}
+            onClick={() =>
+              history.push(
+                `${ROUTES_PATH.CLASSROOMS}/${id}/${record.classroomActivityId}`, 
+              )
+            }
           >
             Làm bài
           </Button>
