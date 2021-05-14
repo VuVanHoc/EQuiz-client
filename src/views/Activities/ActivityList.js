@@ -11,6 +11,7 @@ import {
   Modal,
   Radio,
   DatePicker,
+  Popover,
 } from "antd";
 import { ROLE_TYPE, ACTIVITY_TYPE, ROUTES_PATH } from "../../common/Constants";
 import "./Activity.scss";
@@ -18,10 +19,12 @@ import Avatar from "antd/lib/avatar/avatar";
 import {
   DeleteTwoTone,
   ShareAltOutlined,
-  EditOutlined,
+  MailFilled,
+  PhoneFilled,
   TeamOutlined,
   GlobalOutlined,
   FileTextOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import http from "../../api";
 import moment from "moment";
@@ -164,8 +167,36 @@ export const ActivityList = (props) => {
     {
       align: "center",
       title: "Người tạo",
-      render: () => {
-        return <Avatar>H</Avatar>;
+      render: (_, record) => {
+        return (
+          <Popover
+            placement="right"
+            title={record.responsibleName}
+            content={
+              <div style={{ display: "block" }}>
+                {record.responsibleEmail && (
+                  <a href={`mailto:${record.responsibleEmail}`} target="_blank">
+                    <MailFilled style={{ marginRight: 10 }} />
+                    {record.responsibleEmail}
+                  </a>
+                )}
+                <br />
+                {record.responsiblePhone && (
+                  <a href={`tel:${record.responsiblePhone}`} target="_blank">
+                    <PhoneFilled style={{ marginRight: 10 }} />
+                    {record.responsiblePhone}
+                  </a>
+                )}
+              </div>
+            }
+          >
+            <Avatar
+              icon={<UserOutlined />}
+              src={record.responsibleAvatar || currentUser?.avatar}
+              style={{ backgroundColor: currentUser?.defaultColor }}
+            ></Avatar>
+          </Popover>
+        );
       },
     },
     {
@@ -388,7 +419,7 @@ export const ActivityList = (props) => {
               format="DD/MM/YYYY HH:mm"
               showTime
               showSecond={false}
-              placeholder="Lựa chọn ngày"
+              placeholder="Lựa chọn thời gian"
             />
           </Form.Item>
         </Form>

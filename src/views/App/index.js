@@ -19,6 +19,7 @@ import CreateMenu from "../../common/components/CreateMenu";
 import CreateClassroomModal from "../../common/components/modals/CreateClassroomModal";
 import Join2Classroom from "../../common/components/modals/Join2Classroom";
 import CreateQuestionModal from "../../common/components/modals/CreateQuestionModal";
+import Socket from "../../common/components/Socket";
 
 export const App = (props) => {
   const { currentUser } = props;
@@ -128,7 +129,7 @@ export const App = (props) => {
           </Sider>
           <Content className="container">
             <AppBody />
-
+            <Socket />
             {/* common modal here */}
             <CreateClassroomModal />
             <CreateQuestionModal />
