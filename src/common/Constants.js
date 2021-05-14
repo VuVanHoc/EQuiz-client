@@ -86,3 +86,6 @@ export const LIST_AVATAR = [
     url: "https://firebasestorage.googleapis.com/v0/b/equiz-83b66.appspot.com/o/avatar_template%2Fman.svg?alt=media&token=b0f084ed-c6f6-4391-a3e6-684ebe4bd487",
   },
 ];
+
+export const BASE_URL = "http://localhost:8890/";
+// export const BASE_URL = "https://equiz-backend.herokuapp.com";
