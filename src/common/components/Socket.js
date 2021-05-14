@@ -36,7 +36,7 @@ export const Socket = (props) => {
   return (
     <div>
       <SockJsClient
-        url={`${BASE_URL}ws`}
+        url={`${BASE_URL}/ws`}
         topics={listClassroomStudent?.map((e) => {
           return `/notification/classroom/${e.id}`;
         })}
