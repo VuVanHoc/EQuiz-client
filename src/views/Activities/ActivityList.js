@@ -110,6 +110,7 @@ export const ActivityList = (props) => {
         endTime: values.endTime
           ? new Date(values.endTime.format("YYYY-MM-DD HH:mm")).getTime()
           : null,
+        userId: currentUser.userId,
       };
       try {
         const res = await http.post(`api/activity/assignForClassroom`, body);
