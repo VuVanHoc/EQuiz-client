@@ -57,14 +57,19 @@ export const Notifications = (props) => {
     }
   };
 
-  const updateOneNotification = (id, read, event) => {
-    event.domEvent.stopPropagation();
-    updateNotifications(id, false, read);
+  const updateOneNotification = (id, read, event, reloadList = true) => {
+    event?.domEvent?.stopPropagation();
+    updateNotifications(id, false, read, reloadList);
   };
   const updateAllNotifications = () => {
     updateNotifications(null, true, null);
   };
-  const updateNotifications = async (notificationId, updateAll, read) => {
+  const updateNotifications = async (
+    notificationId,
+    updateAll,
+    read,
+    reloadList = true
+  ) => {
     try {
       const res = await http.post(
         `api/user/updateNotifications`,
@@ -79,7 +84,7 @@ export const Notifications = (props) => {
         }
       );
       if (res) {
-        getListNotification();
+        reloadList && getListNotification();
       }
     } catch (error) {
       console.log(error);
@@ -98,6 +103,17 @@ export const Notifications = (props) => {
       case NOTIFICATION_TYPES.ASSIGNMENT:
         history.push(`${ROUTES_PATH.CLASSROOMS}/${id}`);
         break;
+    }
+  };
+
+  const deleteNotification = async (id) => {
+    try {
+      const res = await http.delete(`api/user/deleteNotification/${id}`);
+      if (res) {
+        getListNotification();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -125,7 +141,10 @@ export const Notifications = (props) => {
         }
         return (
           <Row
-            onClick={() => gotoNotiDetail(noti.type, noti.objectId)}
+            onClick={(e) => {
+              !noti.read && updateOneNotification(noti.id, true, e, false);
+              gotoNotiDetail(noti.type, noti.objectId);
+            }}
             align="middle"
             key={noti.id}
             className={cx({
@@ -193,6 +212,10 @@ export const Notifications = (props) => {
                           style={{ fontSize: 14 }}
                         />
                       }
+                      onClick={(e) => {
+                        e.domEvent.stopPropagation();
+                        deleteNotification(noti.id);
+                      }}
                     >
                       Xoá thông báo
                     </Menu.Item>
@@ -203,7 +226,6 @@ export const Notifications = (props) => {
                   className="icon-more-action"
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log(e);
                   }}
                 />
               </Dropdown>
