@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Avatar, Menu, Dropdown, Badge } from "antd";
 import {
@@ -11,6 +11,7 @@ import "../styles/common.scss";
 import { ROUTES_PATH } from "../Constants";
 import { requestLogout } from "../../store/auth/actions";
 import { withRouter } from "react-router-dom";
+import http from "../../api";
 
 function UserMenu(props) {
   const { currentUser } = props;
@@ -21,6 +22,19 @@ function UserMenu(props) {
   const gotoPage = (to) => {
     props.history.push(to);
   };
+
+  const [totalNoti, setTotalNoti] = useState(0);
+
+  const getTotalNotification = async () => {
+    try {
+      const res = await http.get(`api/user/getNumberUnreadNotifications`, {
+        params: {
+          userId: currentUser.userId,
+        },
+      });
+      setTotalNoti(res);
+    } catch (e) {}
+  };
   const menu = (
     <Menu>
       <Menu.Item
@@ -30,7 +44,11 @@ function UserMenu(props) {
         Thông tin cá nhân
       </Menu.Item>
       <Menu.Item
-        icon={<BellOutlined />}
+        icon={
+          <Badge dot={totalNoti > 0} offset={[-10]}>
+            <BellOutlined />
+          </Badge>
+        }
         onClick={() => gotoPage(ROUTES_PATH.NOTIFICATIONS)}
       >
         Thông báo
@@ -48,12 +66,17 @@ function UserMenu(props) {
   );
   return (
     <Dropdown overlay={menu} trigger="click">
-      <div style={{ cursor: "pointer", marginRight: "1em" }}>
-        <Avatar
-          icon={<UserOutlined />}
-          src={currentUser?.avatar}
-          style={{ backgroundColor: currentUser?.defaultColor }}
-        ></Avatar>
+      <div
+        style={{ cursor: "pointer", marginRight: "1em" }}
+        onClick={getTotalNotification}
+      >
+        <Badge dot={totalNoti > 0}>
+          <Avatar
+            icon={<UserOutlined />}
+            src={currentUser?.avatar}
+            style={{ backgroundColor: currentUser?.defaultColor }}
+          ></Avatar>
+        </Badge>
         <span className="display-name">{currentUser?.fullName}</span>
       </div>
     </Dropdown>

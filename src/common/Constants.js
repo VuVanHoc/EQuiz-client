@@ -57,6 +57,11 @@ export const ERROR_MESSAGE = {
   ACTIVITY_HAS_BEEN_DELETED: "ACTIVITY_HAS_BEEN_DELETED",
 };
 
+export const NOTIFICATION_TYPES = {
+  CHAT: "CHAT",
+  ASSIGNMENT:"ASSIGNMENT"
+}
+
 export const LIST_AVATAR = [
   {
     url: "https://firebasestorage.googleapis.com/v0/b/equiz-83b66.appspot.com/o/avatar_template%2Fboy-1.svg?alt=media&token=f6e4e3f3-2a72-40b7-b2b9-3b1a20cedfe8",

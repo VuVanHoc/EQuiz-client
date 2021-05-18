@@ -249,7 +249,7 @@ export const ClassroomActivity = (props) => {
             style={{ backgroundColor: "orange", color: "#fff" }}
             onClick={() =>
               history.push(
-                `${ROUTES_PATH.CLASSROOMS}/${id}/${record.classroomActivityId}`, 
+                `${ROUTES_PATH.CLASSROOMS}/${id}/${record.classroomActivityId}`
               )
             }
           >
@@ -280,7 +280,11 @@ export const ClassroomActivity = (props) => {
         pagination={{
           total: activities.total || 0,
           onChange: (pageIndex, pageSize) => {
-            fetchListActivities({ pageIndex: pageIndex - 1, pageSize });
+            fetchListActivities({
+              pageIndex: pageIndex - 1,
+              pageSize,
+              classroomId: classroomInfo.id,
+            });
           },
           pageSize: 5,
           showTotal: (total) => {
