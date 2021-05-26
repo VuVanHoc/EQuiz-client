@@ -13,6 +13,10 @@ import {
 import { setVisibleModal } from "../../../store/common/actions";
 import Editor from "../Editor";
 import { QUESTION_TYPES } from "../../Constants";
+import SubjectDropdown from "../../components/SubjectDropdown";
+import http from "../../../api";
+import { NotificationSuccess } from "../Notification";
+import { requestFetchList } from "../../../store/question/actions";
 
 export const CreateQuestionModal = (props) => {
   const labelStyle = {
@@ -23,15 +27,15 @@ export const CreateQuestionModal = (props) => {
     content: "",
   };
 
-  const { visible, setVisibleModal } = props;
+  const { visible, setVisibleModal, currentUser, requestFetchList } = props;
   const [form] = Form.useForm();
   const [questionType, setQuestionType] = useState();
   const [listAnswer, setListAnswer] = useState([]);
-  const [answerModeEditor, setAnswerModeEditor] = useState(false);
   const [questionContent, setQuestionContent] = useState("");
   const [answerFillin, setAnswerFillin] = useState("");
   const [errorAnswer, setErrorAnswer] = useState(null);
   const [errorQuestion, setErrorQuestion] = useState(null);
+  const [isSubmitting, setSubmitting] = useState(false);
 
   const resetForm = () => {
     setQuestionType(null);
@@ -46,7 +50,7 @@ export const CreateQuestionModal = (props) => {
   }, [visible]);
 
   const onOk = () => {
-    form.validateFields().then((values) => {
+    form.validateFields().then(async (values) => {
       if (
         !questionContent ||
         questionContent?.trim() === "" ||
@@ -92,13 +96,30 @@ export const CreateQuestionModal = (props) => {
         level: values.level,
         hint: values.hint,
         content: questionContent,
+        subject: values.subject,
+        createdBy: currentUser.userId,
         answerList:
           questionType === QUESTION_TYPES.FILL_IN
             ? [{ correct: true, content: answerFillin }]
             : listAnswer,
       };
+      try {
+        setSubmitting(true);
+        const res = await http.post(`api/question/create`, body);
+        if (res) {
+          setSubmitting(false);
+          onCancel();
+          NotificationSuccess("Tạo câu hỏi thành công");
+          requestFetchList({
+            pageIndex: 0,
+            pageSize: 10,
+          });
+        }
+      } catch (e) {
+        setSubmitting(false);
 
-      console.log("REQ:", body);
+        console.log(e);
+      }
     });
   };
   const onCancel = () => {
@@ -321,6 +342,9 @@ export const CreateQuestionModal = (props) => {
       okText="Tạo"
       cancelText="Huỷ"
       onOk={onOk}
+      okButtonProps={{
+        loading: isSubmitting,
+      }}
       onCancel={onCancel}
       visible={visible}
     >
@@ -339,6 +363,22 @@ export const CreateQuestionModal = (props) => {
               ]}
             >
               <QuestionTypeDropdown onChange={changeQuestionType} />
+            </Form.Item>
+            <Form.Item
+              colon={false}
+              required
+              label="Chủ đề"
+              labelCol={labelStyle}
+              labelAlign="left"
+              name="subject"
+              rules={[
+                {
+                  required: true,
+                  message: "Bạn chưa lựa chọn chủ đề cho câu hỏi",
+                },
+              ]}
+            >
+              <SubjectDropdown />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -406,10 +446,12 @@ export const CreateQuestionModal = (props) => {
 
 const mapStateToProps = (state) => ({
   visible: state.common.visibleModals["createQuestion"],
+  currentUser: state.auth.user,
 });
 
 const mapDispatchToProps = {
   setVisibleModal,
+  requestFetchList,
 };
 
 export default connect(

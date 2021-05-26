@@ -59,8 +59,8 @@ export const ERROR_MESSAGE = {
 
 export const NOTIFICATION_TYPES = {
   CHAT: "CHAT",
-  ASSIGNMENT:"ASSIGNMENT"
-}
+  ASSIGNMENT: "ASSIGNMENT",
+};
 
 export const LIST_AVATAR = [
   {
@@ -94,3 +94,9 @@ export const LIST_AVATAR = [
 
 // export const BASE_URL = "http://localhost:8890";
 export const BASE_URL = "https://equiz-backend.herokuapp.com";
+
+export const SUBJECTS = {
+  ENGLISH: "ENGLISH",
+  MATH: "MATH",
+  IT: "IT",
+};

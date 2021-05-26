@@ -48,9 +48,9 @@ export const ClassroomList = (props) => {
       width: 300,
     },
     {
+      align: "center",
       title: "Sĩ số",
       dataIndex: "totalStudent",
-      // sorter: (a, b) => a.totalStudent - b.totalStudent,
     },
     {
       title: "Hình thức",
@@ -102,7 +102,6 @@ export const ClassroomList = (props) => {
       align: "center",
       title: "Hành động",
       render: (_, record) => {
-        // return <ActionMenu record={record} />;
         return (
           <div>
             <Tooltip title="Xem chi tiết">
