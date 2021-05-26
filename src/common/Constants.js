@@ -92,8 +92,8 @@ export const LIST_AVATAR = [
   },
 ];
 
-export const BASE_URL = "http://localhost:8890";
-// export const BASE_URL = "https://equiz-backend.herokuapp.com";
+// export const BASE_URL = "http://localhost:8890";
+export const BASE_URL = "https://equiz-backend.herokuapp.com";
 
 export const SUBJECTS = {
   ENGLISH: "ENGLISH",
