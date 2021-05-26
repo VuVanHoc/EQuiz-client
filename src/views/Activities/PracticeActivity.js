@@ -245,7 +245,7 @@ export const PracticeActivity = (props) => {
             console.log(values);
             setActivityType(ACTIVITY_TYPE.HANGMAN);
             setStartTimePractice(new Date().getTime());
-            getListWordForHangman(10, values.level);
+            getListWordForHangman(3, values.level);
             setVisibleLevelHangman(false);
             form.resetFields();
             // setLevelSelected("EASY");

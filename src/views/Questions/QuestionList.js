@@ -10,7 +10,12 @@ import {
   Avatar,
   Tooltip,
 } from "antd";
-import { QUESTION_TYPES, ROLE_TYPE, ROUTES_PATH } from "../../common/Constants";
+import {
+  QUESTION_TYPES,
+  ROLE_TYPE,
+  ROUTES_PATH,
+  SUBJECTS,
+} from "../../common/Constants";
 import "./Question.scss";
 import { requestFetchList } from "../../store/question/actions.js";
 import {
@@ -67,6 +72,16 @@ export const QuestionList = (props) => {
     {
       title: "Chủ đề",
       dataIndex: "subject",
+      render: (subject) => {
+        switch (subject) {
+          case SUBJECTS.MATH:
+            return "Toán học";
+          case SUBJECTS.ENGLISH:
+            return "Tiếng Anh";
+          case SUBJECTS.IT:
+            return "Tin học";
+        }
+      },
     },
     {
       title: "Mức độ",
@@ -153,7 +168,7 @@ export const QuestionList = (props) => {
             <Tooltip title="Xoá">
               <Popconfirm
                 width={150}
-                title="Bạn chắc chắn muốn xoá hoạt động này không?"
+                title="Bạn chắc chắn muốn xoá câu hỏi này không?"
                 okText="Xoá"
                 cancelText="Huỷ"
                 placement="topRight"
@@ -189,6 +204,9 @@ export const QuestionList = (props) => {
       <Table
         // rowSelection={{ ...rowSelection }}
         // scroll={{ x: 1500 }}
+        rowSelection={{
+          preserveSelectedRowKeys: true,
+        }}
         rowKey={(record) => record.id}
         loading={isFetching}
         columns={columns}
@@ -196,7 +214,7 @@ export const QuestionList = (props) => {
         pagination={{
           total: props.totalResult || 0,
           onChange: (pageIndex, pageSize) => {
-            requestFetchList({ pageIndex, pageSize });
+            requestFetchList({ pageIndex: pageIndex - 1, pageSize });
           },
           pageSize: 10,
           showTotal: (total) => {

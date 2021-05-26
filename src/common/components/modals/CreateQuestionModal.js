@@ -31,7 +31,6 @@ export const CreateQuestionModal = (props) => {
   const [form] = Form.useForm();
   const [questionType, setQuestionType] = useState();
   const [listAnswer, setListAnswer] = useState([]);
-  const [answerModeEditor, setAnswerModeEditor] = useState(false);
   const [questionContent, setQuestionContent] = useState("");
   const [answerFillin, setAnswerFillin] = useState("");
   const [errorAnswer, setErrorAnswer] = useState(null);
@@ -104,9 +103,6 @@ export const CreateQuestionModal = (props) => {
             ? [{ correct: true, content: answerFillin }]
             : listAnswer,
       };
-
-      console.log("REQ:", body);
-
       try {
         setSubmitting(true);
         const res = await http.post(`api/question/create`, body);

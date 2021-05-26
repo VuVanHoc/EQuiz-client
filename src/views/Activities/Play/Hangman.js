@@ -1,4 +1,4 @@
-import { Button, Row, Typography, Col, Modal, Carousel } from "antd";
+import { Button, Row, Typography, Col, Modal, Carousel, Divider } from "antd";
 import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import theme1 from "../../../assets/Hangman/theme-balloon1.png";
@@ -24,6 +24,7 @@ import guide3 from "../../../assets/Hangman/guide3.png";
 import guide4 from "../../../assets/Hangman/guide4.png";
 import guide5 from "../../../assets/Hangman/guide5.png";
 import guide6 from "../../../assets/Hangman/guide6.png";
+import Speech from "react-speech";
 
 export const HangmanGamePlay = (props) => {
   const WrongAnswerAudio = new Audio(WrongAnswer);
@@ -99,6 +100,8 @@ export const HangmanGamePlay = (props) => {
     { used: false },
     { used: false },
   ]);
+
+  const refSpeech = useRef(null);
 
   const onClickACharacter = (character) => {
     console.log(character);
@@ -357,7 +360,21 @@ export const HangmanGamePlay = (props) => {
             >
               <Typography.Title level={3}>
                 {currentWord?.word}
-                <SoundOutlined style={{ marginLeft: 10 }} />
+                <div hidden>
+                  <Speech
+                    ref={refSpeech}
+                    text={currentWord?.word}
+                    lang="en-GB"
+                    voice="Google UK English Male"
+                  />
+                </div>
+
+                <SoundOutlined
+                  style={{ marginLeft: 10 }}
+                  onClick={() => {
+                    refSpeech.current.play();
+                  }}
+                />
               </Typography.Title>
               <Typography.Text>{currentWord?.pronunciation}</Typography.Text>
               {currentWord?.detail?.map((detail, index) => {
@@ -380,6 +397,7 @@ export const HangmanGamePlay = (props) => {
         )}
       </div>
       <Modal
+        width={800}
         key="summary"
         title="Tổng kết"
         okText="Đóng"
@@ -393,16 +411,44 @@ export const HangmanGamePlay = (props) => {
         >{`Chúc mừng bạn đã học được thêm ${listWord.length} từ mới hôm nay. Cùng ôn tập lại nhé`}</p>
         {listWord?.map((e, index) => {
           return (
-            <Row key={index} justify="space-between">
-              <Col span={2}>{index + 1}</Col>
-              <Col span={8}>{e?.word}</Col>
-              <Col span={5}>
-                {e?.pronunciation ||
-                  (e?.valueFromWordAPI &&
-                    JSON.parse(e?.valueFromWordAPI)?.pronunciation?.all)}
-              </Col>
-              <Col span={9}>{e?.meaning}</Col>
-            </Row>
+            <div>
+              <Row key={index} justify="space-between" align="middle">
+                <Col span={1}>{index + 1}</Col>
+                <Col span={5}>{e?.word}</Col>
+                <Col span={2}>
+                  <SoundOutlined
+                    style={{ marginLeft: 10 }}
+                    onClick={async () => {
+                      await setCurrentWord(e);
+                      if (currentWord?.word === e.word) {
+                        refSpeech.current.play();
+                      }
+                    }}
+                  />
+                </Col>
+                <Col span={5}>{e?.pronunciation}</Col>
+                <Col span={9}>
+                  {e?.detail?.map((detail, index) => {
+                    return (
+                      <div key={index}>
+                        <b style={{ color: "#008df2" }}>* {detail.type}</b>
+                        {detail?.meaning?.map((meaning, subIndex) => {
+                          return (
+                            <div key={subIndex}>
+                              <p style={{ margin: 0 }}>{meaning.meaning}</p>
+                              {meaning.example && (
+                                <p>Ví dụ: {meaning.example}</p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </Col>
+              </Row>
+              <Divider />
+            </div>
           );
         })}
       </Modal>
