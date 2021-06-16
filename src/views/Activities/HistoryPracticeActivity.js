@@ -86,10 +86,10 @@ export const HistoryPracticeActivity = (props) => {
         return endTime ? moment(endTime).format("DD/MM/YYYY HH:mm A") : "";
       },
     },
-    {
-      title: "Kết quả",
-      dataIndex: "result",
-    },
+    // {
+    //   title: "Kết quả",
+    //   dataIndex: "result",
+    // },
   ];
   return (
     <div>

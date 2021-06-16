@@ -58,12 +58,12 @@ export const App = (props) => {
     //   icon: <CalendarOutlined />,
     //   path: ROUTES_PATH.CALENDAR,
     // },
-    {
-      key: "import",
-      title: "Nhập dữ liệu",
-      icon: <ImportOutlined />,
-      path: ROUTES_PATH.IMPORT,
-    },
+    // {
+    //   key: "import",
+    //   title: "Nhập dữ liệu",
+    //   icon: <ImportOutlined />,
+    //   path: ROUTES_PATH.IMPORT,
+    // },
   ];
   const menusStudent = [
     {
